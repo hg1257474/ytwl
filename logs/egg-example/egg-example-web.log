@@ -1,0 +1,94 @@
+2019-04-08 14:40:47,206 ERROR 3120 [-/::1/-/8ms GET /] nodejs.Error: Please set config.keys first
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:257:15)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 3120
+hostname: PC-201904070600
+
+2019-04-09 10:38:31,205 ERROR 9052 [-/127.0.0.1/-/23ms GET /] nodejs.Error: Please set config.keys first
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:257:15)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 9052
+hostname: PC-201904070600
+
+2019-04-10 13:35:41,732 ERROR 8788 [-/127.0.0.1/-/8ms GET /public/html.index.html] nodejs.Error: Please set config.keys first
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:257:15)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 8788
+hostname: PC-201904070600
+
+2019-04-10 13:37:18,688 ERROR 8012 [-/127.0.0.1/-/14ms GET /public/html.index.html] nodejs.TypeError: this.config.keys.split is not a function
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:260:37)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 8012
+hostname: PC-201904070600
+
+2019-04-10 13:37:36,972 ERROR 8012 [-/127.0.0.1/-/2ms GET /public/html.index.html] nodejs.TypeError: this.config.keys.split is not a function
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:260:37)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 8012
+hostname: PC-201904070600
+
+2019-04-10 13:37:37,963 ERROR 8012 [-/127.0.0.1/-/2ms GET /public/html.index.html] nodejs.TypeError: this.config.keys.split is not a function
+    at Application.get keys [as keys] (D:\project\egg-example\node_modules\egg\lib\application.js:260:37)
+    at Object.get cookies [as cookies] (D:\project\egg-example\node_modules\egg\app\extend\context.js:22:66)
+    at Object.get [egg-security#CSRF_SECRET] (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:86:33)
+    at Object.ensureCsrfSecret (D:\project\egg-example\node_modules\egg-security\app\extend\context.js:97:13)
+    at csrf (D:\project\egg-example\node_modules\egg-security\lib\middlewares\csrf.js:14:9)
+    at dispatch (D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:42:32)
+    at D:\project\egg-example\node_modules\egg-security\node_modules\koa-compose\index.js:34:12
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+    at session (D:\project\egg-example\node_modules\koa-session\index.js:41:13)
+    at dispatch (D:\project\egg-example\node_modules\koa\node_modules\koa-compose\index.js:42:32)
+
+pid: 8012
+hostname: PC-201904070600
+
+2019-04-11 10:24:42,511 WARN 9708 A client (::ffff:127.0.0.1:61934) error [HPE_INVALID_METHOD] occurred: Parse Error
+2019-04-11 10:24:42,513 WARN 9708 A client (::ffff:127.0.0.1:61934) error [HPE_INVALID_METHOD] occurred: Parse Error
+2019-04-11 10:24:42,514 WARN 9708 A client (::ffff:127.0.0.1:61935) error [HPE_INVALID_METHOD] occurred: Parse Error
+2019-04-11 10:24:42,514 WARN 9708 A client (::ffff:127.0.0.1:61935) error [HPE_INVALID_METHOD] occurred: Parse Error

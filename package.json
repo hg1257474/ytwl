@@ -1,0 +1,19 @@
+{
+  "name": "egg-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "dev": "egg-bin dev --sticky"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "egg": "^2.20.2",
+    "egg-socket.io": "^4.1.5"
+  },
+  "devDependencies": {
+    "egg-bin": "^4.12.2"
+  }
+}
