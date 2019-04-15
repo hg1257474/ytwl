@@ -1,19 +1,71 @@
 {
-  "name": "egg-example",
+  "name": "example",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha",
-    "dev": "egg-bin dev --sticky"
+  "private": true,
+  "egg": {
+    "declarations": true
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "egg": "^2.20.2",
-    "egg-socket.io": "^4.1.5"
+    "blueimp-md5": "^2.10.0",
+    "chai": "^4.2.0",
+    "egg": "^2.15.1",
+    "egg-mongoose": "^3.1.1",
+    "egg-passport": "^2.0.1",
+    "egg-scripts": "^2.11.0",
+    "egg-socket.io": "^4.1.5",
+    "egg-view-nunjucks": "^2.2.0",
+    "gm": "^1.23.1",
+    "jimp": "^0.6.1",
+    "js-base64": "^2.5.1",
+    "js-sha1": "^0.6.0",
+    "jshashes": "^1.0.7",
+    "moment": "^2.24.0",
+    "mongoose": "^5.5.4",
+    "passport-local": "^1.0.0",
+    "sharp": "^0.22.0",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "egg-bin": "^4.12.2"
-  }
+    "autod": "^3.0.1",
+    "autod-egg": "^1.1.0",
+    "egg-bin": "^4.11.0",
+    "egg-ci": "^1.11.0",
+    "egg-mock": "^3.21.0",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-egg": "^7.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.2",
+    "prettier": "^1.18.2",
+    "webstorm-disable-index": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-example",
+    "start2": "egg-scripts start ",
+    "stop": "egg-scripts stop --title=egg-server-example",
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run lint && npm run cov",
+    "autod": "autod"
+  },
+  "ci": {
+    "version": "8"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "MIT"
 }

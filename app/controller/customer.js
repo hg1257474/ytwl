@@ -1,0 +1,249 @@
+module.exports = app => {
+  class Controller extends app.Controller {
+    // PUT
+    async info() {
+      const { ctx } = this;
+      const customer = ctx.session.entity;
+      // console.log(ctx.session);
+      if (ctx.method === 'GET') {
+        ctx.body = customer.info;
+        return;
+      }
+      customer.info = { ...customer.info, ...ctx.request.body };
+      await customer.save();
+
+      let isAllInfo = false;
+      for (const key of Object.keys(customer.info)) {
+        if (customer.info[key] && ['phone', 'weChat', 'dingTalk'].includes(key)) {
+          isAllInfo = true;
+          break;
+        }
+        if (!customer.info[key] && !['phone', 'weChat', 'dingTalk'].includes(key)) {
+          isAllInfo = false;
+          break;
+        }
+      }
+      ctx.body = isAllInfo.toString();
+    }
+
+    // GET
+    async servicePayConfig() {
+      const {
+        ctx,
+        ctx: {
+          model: { Service, Order }
+        }
+      } = this;
+      const service = await Service.findById(ctx.query.id).exec();
+      const order = await Order.findById(service.orderId).exec();
+      ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+    }
+
+    async login() {
+      const { ctx } = this;
+      const { Customer } = ctx.model;
+      let customer = null;
+      if (!ctx.session.entity) {
+        const openId = await ctx.service.weChat.getOpenId('Customer');
+        customer = await Customer.findOne({ openId }).exec();
+        if (!customer) {
+          customer = new Customer({
+            openId
+          });
+          await customer.save();
+        }
+        ctx.session = { entity: customer };
+      } else customer = ctx.session.entity;
+      let isAllInfo = false;
+      Object.keys(customer.info).some(key => {
+        if (customer.info[key] && ['phone', 'weChat', 'dingTalk'].includes(key)) {
+          isAllInfo = true;
+
+          return true;
+        }
+        if (!customer.info[key] && !['phone', 'weChat', 'dingTalk'].includes(key)) {
+          isAllInfo = false;
+          return true;
+        }
+        return false;
+      });
+      ctx.body = {
+        vip: customer.vip,
+        isAllInfo
+      };
+      const resource = app.caches.getResource('indexPage');
+      console.log(resource.updatedAt.toString());
+      console.log(ctx.request.body.expires);
+      if (resource.updatedAt.toString() !== ctx.request.body.expires) {
+        ctx.body.indexPage = resource.content;
+        ctx.body.expires = resource.updatedAt.toString();
+      }
+    }
+
+    async vip() {
+      const {
+        ctx,
+        ctx: {
+          request: { body },
+          model: { Order },
+          session: { entity }
+        }
+      } = this;
+      if (ctx.method === 'GET') {
+        ctx.session.entity = await this.ctx.model.Customer.findById(entity._id).exec();
+
+        ctx.body = ctx.session.entity.vip;
+        ctx.status = 200;
+        return;
+      }
+      const orderId = await this.ctx.service.pay.new(
+        body.totalFee,
+        entity._id,
+        body.name,
+        body.description
+      );
+      // console.log(orderId);
+      const order = await Order.findById(orderId).exec();
+      order.description.orderId = order._id.toString();
+      await order.save();
+      ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+    }
+
+    async pushTest() {
+      await this.ctx.service.weChat.pushMessage(
+        'oA6C84heEWDC0kbuZx1GiS3q3Kps',
+        '/pages/index/index',
+        'Customer',
+        'newService',
+        {
+          first: { value: 'test', color: '#888' },
+          keyword1: { value: 'test', color: '#888' },
+          keyword2: { value: 'test', color: '#888' },
+          remark: { value: 'test', color: '#888' }
+        }
+      );
+      this.ctx.body = 'success';
+    }
+
+    async order() {
+      const { ctx } = this;
+      const order = await ctx.model.Order.findById(ctx.params.id).exec();
+      const result = {
+        name: order.name,
+        totalFee: order.totalFee,
+        remark: '测试使用',
+        date: `${order.createdAt.getFullYear()}年${order.createdAt.getMonth() +
+          1}月${order.createdAt.getDate()}日 ${order.createdAt.getHours()}时${order.createdAt.getMinutes()}分${order.createdAt.getSeconds()}秒`
+      };
+      ctx.body = result;
+    }
+
+    async consultingPrice() {
+      const { ctx } = this;
+      const resource = this.app.caches.getResource('payPage');
+      ctx.body = {};
+      if (ctx.request.header['if-modified-since'] !== resource.updatedAt.toString()) {
+        ctx.body.payPage = resource.content;
+        ctx.set('expires', resource.updatedAt.toString());
+      }
+      ctx.body.points = ctx.session.entity.points.total;
+    }
+
+    async orders() {
+      const {
+        ctx,
+        ctx: {
+          model: { Order },
+          session: { entity }
+        }
+      } = this;
+      const orders = [];
+      // console.log(entity)
+      for (const orderId of entity.orders) {
+        const order = await Order.findById(orderId).exec();
+        orders.push([
+          order.name,
+          `${order.createdAt.getFullYear()}年${order.createdAt.getMonth() +
+            1}月${order.createdAt.getDate()}日`,
+          order.totalFee,
+          order._id.toString()
+        ]);
+      }
+      ctx.body = orders;
+    }
+
+    async payment() {
+      this.ctx.body = 'success';
+      this.ctx.status = 200;
+      const xml = await this.ctx.parseXml();
+      // console.log(xml);
+      const result = xml.includes('<result_code><![CDATA[SUCCESS]]></result_code>');
+      if (result) {
+        const orderId = xml.split('<out_trade_no><![CDATA[')[1].split(']]></out_trade_no>')[0];
+        const order = await this.ctx.model.Order.findById(orderId).exec();
+        const customer = await this.ctx.model.Customer.findById(order.customerId).exec();
+        let vip;
+        let points;
+        order.hasPaid = true;
+        if (order.description.serviceId) {
+          const service = await this.ctx.model.Service.findById(order.description.serviceId).exec();
+          service.status = 'wait_assign';
+          points = '服务支付';
+          await service.save();
+        } else if (order.description.balance) {
+          vip = { balance: 1 };
+          points = '单次咨询充值';
+          await customer.save();
+        } else if (order.description.monthVip) {
+          vip = {
+            kind: 'month',
+            expires: new Date(30 * 24 * 3600 * 1000 + new Date().getTime())
+          };
+          points = '月度会员充值';
+        } else {
+          vip = {
+            kind: 'year',
+            expires: new Date(365 * 24 * 3600 * 1000 + new Date().getTime())
+          };
+          points = '年度会员充值';
+        }
+        customer.orders.push(orderId);
+        if (vip) customer.vip = { ...customer.vip, ...vip };
+        customer.consumption += order.totalFee;
+        customer.points.records.push([points, order.createdAt, order.totalFee]);
+        customer.points.total += order.totalFee;
+        await customer.save();
+
+        await order.save();
+      }
+    }
+
+    async pointsTotal() {
+      this.ctx.body = this.ctx.session.entity.points.total;
+    }
+
+    async pointsRecords() {
+      this.ctx.body = this.ctx.session.entity.points.records.map(item => {
+        console.log(item[1]);
+
+        return [
+          item[0],
+          `${item[1].getFullYear()}.${item[1].getMonth() + 1}.${item[1].getDate()}`,
+          item[2]
+        ];
+      });
+    }
+
+    async defaultContact() {
+      let defaultContact = this.ctx.session.entity.info;
+      defaultContact = {
+        name: defaultContact.contact,
+        phone: defaultContact.phone,
+        weChat: defaultContact.weChat,
+        dingTalk: defaultContact.dingTalk
+      };
+      this.ctx.body = { defaultContact };
+    }
+  }
+  return Controller;
+};
