@@ -44,7 +44,9 @@ module.exports = app => {
         (ctx.query.identity === 'lawyer') !== !!ctx.session.entity.privilege.canProcessingService
       ) {
         const preRequire =
-          ctx.query.identity === 'lawyer' ? { 'privilege.canProcessingService': true } : {};
+          ctx.query.identity === 'lawyer'
+            ? { 'privilege.canProcessingService': true }
+            : { 'privilege.canAssignService': true };
         const { Servicer } = ctx.model;
         const { body } = ctx.request;
         let servicer = null;

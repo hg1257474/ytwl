@@ -74,7 +74,8 @@ module.exports = app => {
         body.canSendQuote = true;
 
       // conclusion view
-      if (entity.privilege && service.conclusion) body.conclusion = service.conclusion;
+      // if (entity.privilege && service.conclusion)
+      if (service.conclusion) body.conclusion = service.conclusion;
       // can endService
       if (oIdEqual(entity._id, service.processorId) && service.status === 'processing')
         body.canEndService = true;

@@ -35,8 +35,16 @@ module.exports = app => {
         }
       } = this;
       const service = await Service.findById(ctx.query.id).exec();
-      const order = await Order.findById(service.orderId).exec();
-      ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+      // console.log(service);
+      const order = await Order.findById(service.orderId).lean();
+      if (ctx.query.pointDeduction) order.description.pointDeduction = ctx.query.pointDeduction;
+      delete order._id;
+      const newOrder = await Order.create(order);
+      service.orderId = newOrder._id;
+      await service.save();
+      if (ctx.query.pointDeduction && !(order.totalFee - ctx.query.pointDeduction))
+        ctx.redirect(`/customer/payment?orderId=${newOrder._id}`);
+      else ctx.body = await this.ctx.service.weChat.getPayConfig(newOrder);
     }
 
     async login() {
@@ -104,9 +112,11 @@ module.exports = app => {
       );
       // console.log(orderId);
       const order = await Order.findById(orderId).exec();
-      order.description.orderId = order._id.toString();
-      await order.save();
-      ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+      // order.description.orderId = order._id.toString();
+      // await order.save();
+      if (order.description.pointDeduction && !(order.totalFee - order.description.pointDeduction))
+        ctx.redirect(`/customer/payment?orderId=${order._id}`);
+      else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
     }
 
     async pushTest() {
@@ -136,6 +146,10 @@ module.exports = app => {
           1}月${order.createdAt.getDate()}日 ${order.createdAt.getHours()}时${order.createdAt.getMinutes()}分${order.createdAt.getSeconds()}秒`
       };
       ctx.body = result;
+    }
+
+    async pointsTotal() {
+      this.ctx.body = this.ctx.session.entity.points.total;
     }
 
     async consultingPrice() {
@@ -173,14 +187,19 @@ module.exports = app => {
     }
 
     async payment() {
-      this.ctx.body = 'success';
-      this.ctx.status = 200;
+      console.log(12321312);
+      const { ctx } = this;
+      ctx.body = ctx.query.orderId ? 'totalFee is 0' : 'success';
       const xml = await this.ctx.parseXml();
-      // console.log(xml);
+      console.log(xml);
       const result = xml.includes('<result_code><![CDATA[SUCCESS]]></result_code>');
-      if (result) {
-        const orderId = xml.split('<out_trade_no><![CDATA[')[1].split(']]></out_trade_no>')[0];
+      if (result || ctx.query.orderId) {
+        const orderId =
+          ctx.query.orderId ||
+          xml.split('<out_trade_no><![CDATA[')[1].split(']]></out_trade_no>')[0];
+        console.log(orderId);
         const order = await this.ctx.model.Order.findById(orderId).exec();
+        console.log(order);
         const customer = await this.ctx.model.Customer.findById(order.customerId).exec();
         let vip;
         let points;
@@ -209,17 +228,16 @@ module.exports = app => {
         }
         customer.orders.push(orderId);
         if (vip) customer.vip = { ...customer.vip, ...vip };
-        customer.consumption += order.totalFee;
-        customer.points.records.push([points, order.createdAt, order.totalFee]);
-        customer.points.total += order.totalFee;
+        const pointDeduction = order.description.pointDeduction || 0;
+        customer.consumption += order.totalFee - pointDeduction;
+        if (pointDeduction)
+          customer.points.records.push([`${points}积分抵扣`, order.createdAt, -pointDeduction]);
+        if (order.totalFee - pointDeduction > 0)
+          customer.points.records.push([points, order.createdAt, order.totalFee - pointDeduction]);
+        customer.points.total += order.totalFee - 2 * pointDeduction;
         await customer.save();
-
         await order.save();
       }
-    }
-
-    async pointsTotal() {
-      this.ctx.body = this.ctx.session.entity.points.total;
     }
 
     async pointsRecords() {

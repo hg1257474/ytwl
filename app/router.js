@@ -46,6 +46,8 @@ module.exports = app => {
   router.get('/customer/vip', controller.customer.vip);
   router.put('/customer/vip', controller.customer.vip);
   router.post('/customer/payment', controller.customer.payment);
+  router.get('/customer/payment', controller.customer.payment);
+  router.put('/customer/payment', controller.customer.payment);
   router.get('/customer/orders', controller.customer.orders);
   router.get('/order/:id', controller.customer.order);
   router.get('/download_page', controller.file.download_page);

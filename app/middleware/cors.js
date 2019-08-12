@@ -19,6 +19,7 @@ module.exports = options => {
     ) {
       ctx.parseXml = () =>
         new Promise(resolve => {
+          if (ctx.query.orderId) resolve('');
           let data = '';
           ctx.req.on('data', chunk => (data += chunk));
           ctx.req.on('end', () => {
