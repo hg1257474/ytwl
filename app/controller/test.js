@@ -42,6 +42,7 @@ module.exports = app => {
       ctx.response.set('Content-Disposition', 'attachment;filename=abc.html');
       console.log(ctx.body);
     }
+
     async resourceUpload() {
       const { ctx } = this;
       const {

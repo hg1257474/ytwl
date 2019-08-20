@@ -4,11 +4,13 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller, io } = app;
-  // router.get("/mpCache", controller.mpCache.getCache);
-  //router.get("/", controller.home.index);
-  //router.get("/backstage/servicer",controller.backstage.servicer.index)
-  //router.get("/backstage/servicer/:id",controller.backstage.servicer.detail)
+  const { router, controller } = app;
+  router.get('/backstage/servicer', controller.backstage.servicer.getServicers);
+  router.get('/backstage/servicer/:id', controller.backstage.servicer.getServicer);
+  router.post('/backstage/servicer', controller.backstage.servicer.addServicer);
+  router.put('/backstage/servicer/:id', controller.backstage.servicer.updateServicer);
+  router.del('/backstage/servicer/:id', controller.backstage.servicer.deleteServicer);
+
   router.get('/backstage/analysis', controller.backstage.analysis.index);
   router.post('/service/file', controller.service.file.index);
   router.get('/service/file', controller.service.file.index);
@@ -19,15 +21,8 @@ module.exports = app => {
   router.post('/servicer/official_account', controller.servicer.officialAccount);
   router.get('/backstage/customer', controller.backstage.customer.index);
   router.get('/backstage/order', controller.backstage.order.index);
-  router.get('/backstage/servicer', controller.backstage.servicer.index);
-  router.get('/backstage/servicer/:id', controller.backstage.servicer.myUpdate);
-  router.post('/backstage/servicer/:id', controller.backstage.servicer.myUpdate);
-  router.del('/backstage/servicer/:id', controller.backstage.servicer.myUpdate);
-  router.put('/backstage/servicer/:id', controller.backstage.servicer.myUpdate);
-
   router.get('/backstage/service', controller.backstage.service.index);
   router.get('/resource_test/:id', controller.test.getFile);
-  router.get('/8ja1ViVHIL.txt', controller.test.weChat);
   router.get('/service/pay_config', controller.customer.servicePayConfig);
   router.get('/service/processors', controller.service.index.processors);
   router.get('/service/payment_status', controller.service.index.paymentStatus);
