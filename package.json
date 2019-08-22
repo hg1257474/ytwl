@@ -7,7 +7,6 @@
     "declarations": true
   },
   "dependencies": {
-    "blueimp-md5": "^2.10.0",
     "chai": "^4.2.0",
     "egg": "^2.15.1",
     "egg-mongoose": "^3.1.1",
@@ -15,15 +14,9 @@
     "egg-scripts": "^2.11.0",
     "egg-socket.io": "^4.1.5",
     "egg-view-nunjucks": "^2.2.0",
-    "gm": "^1.23.1",
-    "jimp": "^0.6.1",
-    "js-base64": "^2.5.1",
-    "js-sha1": "^0.6.0",
-    "jshashes": "^1.0.7",
     "moment": "^2.24.0",
     "mongoose": "^5.5.4",
     "passport-local": "^1.0.0",
-    "sharp": "^0.22.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
