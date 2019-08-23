@@ -8,12 +8,11 @@ module.exports = app => {
       let matchArgs = [];
       args.push({ $match: { conclusion: { $exists: true } } });
 
-      if (query.serviceNameFilter) {
-        console.log(queries.serviceNameFilter);
-        matchArgs.push({ serviceName: { $all: queries.serviceNameFilter } });
+      if (query.isServiceNameFiltered) {
+        matchArgs.push({ serviceName: { $all: queries.isServiceNameFiltered } });
       }
-      if (query.processorFilter) {
-        matchArgs.push({ processor: query.processorFilter });
+      if (query.isProcessorFiltered) {
+        matchArgs.push({ processor: query.isProcessorFiltered });
       }
       args.push({
         $lookup: {
