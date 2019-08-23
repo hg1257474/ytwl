@@ -7,8 +7,8 @@ module.exports = app => {
       const args = [];
       let matchArgs = [];
       matchArgs.push({ hasPaid: true });
-      if (query.nameFilter) {
-        const regexStr = query.nameFilter.replace(/\s+/g, '|');
+      if (query.isNameFiltered) {
+        const regexStr = query.isNameFiltered.replace(/\s+/g, '|');
         matchArgs.push({ name: { $regex: new RegExp(regexStr) } });
       }
       if (query.updatedAtFilter) {
