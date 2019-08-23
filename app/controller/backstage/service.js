@@ -6,17 +6,17 @@ module.exports = app => {
       const { query, queries } = ctx;
       const args = [];
       let matchArgs = [];
-      if (query.statusFilter) {
-        matchArgs.push({ status: { $in: queries.statusFilter } });
+      if (query.isStatusFiltered) {
+        matchArgs.push({ status: { $in: queries.isStatusFiltered } });
       }
-      if (query.nameFilter) {
-        matchArgs.push({ name: { $all: queries.nameFilter } });
+      if (query.isNameFiltered) {
+        matchArgs.push({ name: { $all: queries.isNameFiltered } });
       }
-      if (query.updatedAtFilter) {
+      if (query.isUpdatedAtFiltered) {
         matchArgs.push({
           updatedAt: {
-            $gte: new Date(queries.updatedAtFilter[0]),
-            $lte: new Date(queries.updatedAtFilter[1])
+            $gte: new Date(queries.isUpdatedAtFiltered[0]),
+            $lte: new Date(queries.isUpdatedAtFiltered[1])
           }
         });
       }
