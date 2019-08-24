@@ -45,6 +45,16 @@ module.exports = app => {
       const orders = await ctx.model.Order.aggregate(args);
       ctx.body = { orders, total };
     }
+
+    async detail() {
+      const { ctx } = this;
+      const order = await ctx.model.Order.findById(ctx.params.id).lean();
+      order.customerName = (await ctx.model.Customer.findById(
+        order.customerId
+      ).lean()).info.company;
+      console.log(order)
+      ctx.body = order;
+    }
   }
   return Controller;
 };

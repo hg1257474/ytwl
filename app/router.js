@@ -21,6 +21,7 @@ module.exports = app => {
   router.post('/servicer/official_account', controller.servicer.officialAccount);
   router.get('/backstage/customer', controller.backstage.customer.index);
   router.get('/backstage/order', controller.backstage.order.index);
+  router.get('/backstage/order/:id', controller.backstage.order.detail);
   router.get('/backstage/service', controller.backstage.service.index);
   router.get('/resource_test/:id', controller.test.getFile);
   router.get('/service/pay_config', controller.customer.servicePayConfig);
