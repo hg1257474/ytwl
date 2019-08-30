@@ -15,7 +15,7 @@ module.exports = ({ mongoose }) => {
         phone: Number,
         method: String,
         content: String
-      },
+      }
     },
     { timestamps: true }
   );

@@ -6,6 +6,9 @@ module.exports = app => {
       const { query, queries } = ctx;
       const args = [];
       let matchArgs = [];
+      if (query.customerId) {
+        matchArgs.push({ customerId: ctx.app.mongoose.Types.ObjectId(query.customerId) });
+      }
       matchArgs.push({ hasPaid: true });
       if (query.isNameFiltered) {
         const regexStr = query.isNameFiltered.replace(/\s+/g, '|');
@@ -27,11 +30,35 @@ module.exports = app => {
       console.log(matchArgs);
       const total = await ctx.model.Order.find(matchArgs).countDocuments();
       args.push({
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customer'
+        }
+      });
+      args.push({
+        $match: {
+          $expr: {
+            $gt: [{ $size: '$customer' }, 0]
+          }
+        }
+      });
+      args.push({
         $project: {
           name: 1,
+          customerId: 1,
           totalFee: 1,
+          description: 1,
           updatedAt: 1,
-          customerId: 1
+          customerName: {
+            $let: {
+              vars: {
+                target: { $arrayElemAt: ['$customer', 0] }
+              },
+              in: '$$target.info.company'
+            }
+          }
         }
       });
       const $sort = {};
@@ -44,16 +71,6 @@ module.exports = app => {
       console.log(args);
       const orders = await ctx.model.Order.aggregate(args);
       ctx.body = { orders, total };
-    }
-
-    async detail() {
-      const { ctx } = this;
-      const order = await ctx.model.Order.findById(ctx.params.id).lean();
-      order.customerName = (await ctx.model.Customer.findById(
-        order.customerId
-      ).lean()).info.company;
-      console.log(order)
-      ctx.body = order;
     }
   }
   return Controller;

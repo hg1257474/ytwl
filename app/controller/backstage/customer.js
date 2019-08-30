@@ -38,6 +38,13 @@ module.exports = app => {
       const customers = await ctx.model.Customer.aggregate(args);
       ctx.body = { customers, total };
     }
+
+    async info() {
+      const { ctx } = this;
+      ctx.body = (await ctx.model.Customer.findById(ctx.params.id)
+        .select('info')
+        .lean()).info;
+    }
   }
   return Controller;
 };

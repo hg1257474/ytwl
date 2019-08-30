@@ -17,12 +17,14 @@ module.exports = app => {
   router.put('/service/file', controller.service.file.index);
   router.get('/resource/:target/:id/:name', controller.other.resource);
   router.get('/backstage/conclusion', controller.backstage.conclusion.index);
+  router.get('/backstage/conclusion/:id', controller.backstage.conclusion.detail);
   router.get('/servicer/official_account', controller.servicer.officialAccount);
   router.post('/servicer/official_account', controller.servicer.officialAccount);
   router.get('/backstage/customer', controller.backstage.customer.index);
+  router.get('/backstage/customer/:id', controller.backstage.customer.info);
   router.get('/backstage/order', controller.backstage.order.index);
-  router.get('/backstage/order/:id', controller.backstage.order.detail);
   router.get('/backstage/service', controller.backstage.service.index);
+  router.get('/backstage/service/:id', controller.backstage.service.detail);
   router.get('/resource_test/:id', controller.test.getFile);
   router.get('/service/pay_config', controller.customer.servicePayConfig);
   router.get('/service/processors', controller.service.index.processors);
@@ -67,85 +69,4 @@ module.exports = app => {
   router.post('/backstage/resource', controller.backstage.resource.newItem);
   router.delete('/backstage/resource', controller.backstage.resource.deleteItem);
   router.get('/backstage/resource/:target', controller.backstage.resource.other);
-  // router.post('/backstage/resource', controller.backstage.resource.update);
-  /*
-  router.post("/servicer/login", controller.servicer.login);
-  router.get("/customer", controller.customer.info);
-  router.post("/customer/question",controller.customer.question)
-  router.put("/customer", controller.customer.info);
-  router.put("/customer/vip", controller.customer.vip);
-  router.put("/account", controller.account.basic);
-  router.get("/chat/jsSdkConfig", controller.chat.jsSdkConfig);
-  router.get("/chat/doc", controller.chat.doc);
-  router.get("/service/:sessionId",controller.service.index)
-  io.of("/service/customer").route("pull", io.controller.serviceCustomer.pull);
-  io.of("/service/customer").route("disconnect",io.controller.serviceCustomer.disconnect)
-  io.of("/service/servicer").route("pull", io.controller.serviceServicer.pull);
-  io.of("/service/servicer").route("disconnect",io.controller.serviceServicer.disconnect)
-  io.of("/chat").route("pull", io.controller.chat.pull);
-  io.of("/chat").route("push", io.controller.chat.push);
-  io.of("/chat").route("disconnect", io.controller.chat.disconnect);
-  io.of("/chat").route("instruction", io.controller.chatServicer.instruction);
-  router.post("/pay/callback",controller.pay.callback)
-  router.post("/pay",controller.pay.request)
-  */
-
-  //console.log(controller);
-  /*
-  router.post("/login",controller.account.login)
-  router.post("/register",controller.account.register)
-  router.put("/account",controller.account.update)
-
-
-  
-  router.post("/mpUserAccount/login", controller.mpUserAccount.login);
-  router.post("/mpUserAccount/update", controller.mpUserAccount.update);
-  router.get("/mpUserAccount/getInfo", controller.mpUserAccount.getInfo);
-  router.post("/mpUserAccount/updateInfo", controller.mpUserAccount.updateInfo);
-  router.post("/test", controller.test.test);
-  router.get("/test", controller.test.test);
-  router.options("/test",controller.test.test)
-
-  router.post(
-    "/mpServicerAccount/register",
-    controller.mpServicerAccount.register
-  );
-  router.post("/mpServicerAccount/login", controller.mpServicerAccount.login);
-  router.post("/mpServicerAccount/update", controller.mpServicerAccount.update);
-
-  router.post("/question", controller.question.submit);
-  router.get("/", controller.home.index);
-
-  router.get("/chat/document",controller.chat.getDocument)
-  router.post("/chat/document",controller.chat.getDocument)
-  router.get("/chat/jsSdkConfig",controller.chat.getJsSdkConfig)
-  //router.post(
-  //  "/loginss",controller.authcallback.index
-  //);
-  // default
-  //console.log("e[41;37m");
-  //console.error(io.controller);
-  //console.log("e[0m");
-  //io.of("/").route("server", io.controller.default.ping);
-  io.of("/mpChat").route("push", io.controller.mpChat.push);
-  // io.of("/").route("see",io.controller.default.see)
-  io.of("/mpChat").route("pull", io.controller.mpChat.pull);
-  io.of("/mpChat").route("instruction", io.controller.mpChatInstruction.instruction);
-  io.of("/mpChat").route("disconnect", io.controller.mpChat.disconnect);
-  io.of("/mpServicerService").route(
-    "pull",
-    io.controller.mpServicerService.pull
-  );
-  io.of("/mpServicerService").route(
-    "disconnect",
-    io.controller.mpServicerService.disconnect
-  );
-  io.of("/mpUserService").route("pull", io.controller.mpUserService.pull);
-  io.of("/mpUserService").route(
-    "disconnect",
-    io.controller.mpUserService.disconnect
-  );
-  // io.of("/").route("disconnect",io.controller.default.ping)
-  // socket.io
-  */
 };

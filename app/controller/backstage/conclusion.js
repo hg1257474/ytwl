@@ -51,7 +51,17 @@ module.exports = app => {
       const conclusions = await ctx.model.Service.aggregate(args);
       ctx.body = { conclusions, total: total[0] ? total[0].total : 0 };
     }
+
+    async detail() {
+      const { ctx } = this;
+      const service = await ctx.model.Service.findById(ctx.params.id).lean();
+      service.processorName = (await ctx.model.Servicer.findById(service.processorId)
+        .select('name')
+        .exec()).name;
+      ctx.body = service;
+    }
   }
+
   return Controller;
 };
 /*
