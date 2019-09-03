@@ -48,7 +48,9 @@ module.exports = app => {
         if (query.target === 'indexPageTerm') {
           tempResource[body.oldCategory][1].splice(body.oldIndex, 1);
           tempResource[body.category][1].splice(body.index, 0, [
-            [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')], //body.termIcon?"":"",
+            body.termIcon.length === 2
+              ? body.termIcon
+              : [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')], //body.termIcon?"":"",
             body.term,
             body.termDescription,
             body.termOther
