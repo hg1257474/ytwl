@@ -39,25 +39,90 @@ module.exports = app => {
     async addServicer() {
       const { ctx } = this;
       const { body } = ctx.request;
+      const { lawyerExhibitionOrder } = body;
+      delete body.lawyerExhibitionOrder;
       if (body.avatar)
         body.avatar[1] = await ctx.service.file.create(body.avatar[1], 'lawyer_avatar');
       const servicer = new ctx.model.Servicer(body);
       await servicer.save();
+      if (lawyerExhibitionOrder) {
+        let lawyerExhibition = await ctx.model.Resource.findOne({
+          category: 'lawyerExhibition'
+        }).exec();
+        lawyerExhibition.content.splice(lawyerExhibitionOrder - 1, 0, servicer._id);
+        lawyerExhibition.markModified('content');
+        await lawyerExhibition.save();
+        lawyerExhibition = {
+          content: await ctx.model.Servicer.find(
+            { _id: { $in: lawyerExhibition.content } },
+            { avatar: 1, expert: 1, name: 1 }
+          ).lean(),
+          updatedAt: lawyerExhibition.updatedAt
+        };
+        app.caches.setResource('lawyerExhibition', lawyerExhibition);
+      }
       ctx.body = 'success';
     }
 
     async updateServicer() {
       const { ctx } = this;
       const { body } = ctx.request;
+      console.log(body);
       if (body.avatar && body.avatar[1].includes('base64'))
         body.avatar[1] = await ctx.service.file.create(body.avatar[1], 'lawyer_avatar');
-      console.log(body);
+      let lawyerExhibition = await ctx.model.Resource.findOne({
+        category: 'lawyerExhibition'
+      }).exec();
+      console.log(lawyerExhibition);
+      const position = lawyerExhibition.content.findIndex(item => {
+        console.log(item);
+        return item.toString() === body.id;
+      });
+      console.log(position);
+      if (body.lawyerExhibitionOrder > 0 || position !== body.lawyerExhibitionOrder - 1) {
+        if (position !== -1) {
+          console.log('fuck');
+          lawyerExhibition.content.splice(position, 1);
+        }
+        if (body.lawyerExhibitionOrder) {
+          console.log('log2');
+          lawyerExhibition.content.splice(body.lawyerExhibitionOrder - 1, 0, body.id);
+        }
+        lawyerExhibition.markModified('content');
+        await lawyerExhibition.save();
+        lawyerExhibition = {
+          content: await ctx.model.Servicer.find(
+            { _id: { $in: lawyerExhibition.content } },
+            { avatar: 1, expert: 1, name: 1 }
+          ).lean(),
+          updatedAt: lawyerExhibition.updatedAt
+        };
+        app.caches.setResource('lawyerExhibition', lawyerExhibition);
+      }
+      delete body.lawyerExhibitionOrder;
       await ctx.model.Servicer.findByIdAndUpdate(ctx.params.id, body).exec();
       ctx.body = 'success';
     }
 
     async deleteServicer() {
       const { ctx } = this;
+      let lawyerExhibition = await ctx.model.Resource.findOne({
+        category: 'lawyerExhibition'
+      }).exec();
+      const position = lawyerExhibition.content.indexOf(ctx.params.id);
+      if (position > -1) {
+        lawyerExhibition.content.splice(position, 1);
+        await lawyerExhibition.save();
+        lawyerExhibition = {
+          content: await ctx.model.Servicer.find(
+            { _id: { $in: lawyerExhibition.content } },
+            { avatar: 1, expert: 1, name: 1 }
+          ).lean(),
+          updatedAt: lawyerExhibition.updatedAt
+        };
+
+        app.caches.setResource('lawyerExhibition', lawyerExhibition);
+      }
       await ctx.model.Servicer.findByIdAndDelete(ctx.params.id).exec();
       ctx.body = 'success';
     }

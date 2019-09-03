@@ -62,6 +62,22 @@ module.exports = app => {
       });
       await indexPage.save();
     }
+    let lawyerExhibition = await Resource.findOne({ category: 'lawyerExhibition' }).exec();
+    if (!lawyerExhibition) {
+      lawyerExhibition = new Resource({
+        category: 'lawyerExhibition',
+        content: []
+      });
+      await lawyerExhibition.save();
+    }
+    lawyerExhibition = {
+      content: await Servicer.find(
+        { _id: { $in: lawyerExhibition.content } },
+        { avatar: 1, expert: 1, name: 1 }
+      ).lean(),
+      updatedAt: lawyerExhibition.updatedAt
+    };
+    app.caches.setResource('lawyerExhibition', lawyerExhibition);
     app.caches.setResource('payPage', payPage);
     app.caches.setResource('indexPage', indexPage);
     /*

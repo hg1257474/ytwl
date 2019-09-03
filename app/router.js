@@ -15,6 +15,10 @@ module.exports = app => {
   router.post('/service/file', controller.service.file.index);
   router.get('/service/file', controller.service.file.index);
   router.put('/service/file', controller.service.file.index);
+  router.get(
+    '/client_mini_program/lawyer_exhibition',
+    controller.clientMiniProgram.lawyerExhibition
+  );
   router.get('/resource/:target/:id/:name', controller.other.resource);
   router.get('/backstage/conclusion', controller.backstage.conclusion.index);
   router.get('/backstage/conclusion/:id', controller.backstage.conclusion.detail);
