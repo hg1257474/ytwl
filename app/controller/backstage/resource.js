@@ -76,9 +76,9 @@ module.exports = app => {
       if (query.target.includes('indexPage')) {
         resource = this.app.caches.getResource('indexPage');
         tempResource = resource.content;
-        if (query.target !== 'indexPageCategory')
-          resource[query.indexPageCategorySelected][1].splice(query.index, 1);
-        else tempResource.splice(query.inputTarget, 1);
+        if (query.target !== 'indexPageCategory') {
+          tempResource[query.indexPageCategorySelected][1].splice(query.inputTarget, 1);
+        } else tempResource.splice(query.inputTarget, 1);
       }
       resource.markModified('content');
       await resource.save();
@@ -95,14 +95,12 @@ module.exports = app => {
         resource = this.app.caches.getResource('indexPage');
         tempResource = resource.content;
         if (body.term) {
-          tempResource
-            .find(item => item[1] === body.category)[3]
-            .splice(body.index, 0, [
-              await ctx.service.file.create(body.termIcon[1], 'indexPage', body.termIcon[0]),
-              body.term,
-              body.termSummary,
-              body.termDescription
-            ]);
+          tempResource[body.category][1].splice(body.index, 0, [
+            [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')],
+            body.term,
+            body.termDescription,
+            body.termOther
+          ]);
         } else {
           tempResource.splice(body.index, 0, [body.category, []]);
         }

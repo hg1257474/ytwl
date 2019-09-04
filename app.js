@@ -77,6 +77,13 @@ module.exports = app => {
       ).lean(),
       updatedAt: lawyerExhibition.updatedAt
     };
+    let indexPageBanner = await Resource.findOne({ category: 'indexPageBanner' }).exec();
+    if (!indexPageBanner) {
+      indexPageBanner = new Resource({
+        category: 'indexPageBanner'
+      });
+    }
+    app.caches.setResource('indexPageBanner', indexPageBanner);
     app.caches.setResource('lawyerExhibition', lawyerExhibition);
     app.caches.setResource('payPage', payPage);
     app.caches.setResource('indexPage', indexPage);

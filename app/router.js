@@ -19,6 +19,14 @@ module.exports = app => {
     '/client_mini_program/lawyer_exhibition',
     controller.clientMiniProgram.lawyerExhibition
   );
+  router.get(
+    '/client_mini_program/index_page_banner',
+    controller.clientMiniProgram.indexPageBanner
+  );
+  router.put(
+    '/client_mini_program/index_page_banner',
+    controller.clientMiniProgram.indexPageBanner
+  );
   router.get('/resource/:target/:id/:name', controller.other.resource);
   router.get('/backstage/conclusion', controller.backstage.conclusion.index);
   router.get('/backstage/conclusion/:id', controller.backstage.conclusion.detail);
