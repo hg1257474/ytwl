@@ -92,11 +92,10 @@ module.exports = app => {
         ).lean(),
         updatedAt: lawyerExhibition.updatedAt
       };
-      app.caches.setResource('indexPageBanner', indexPageBanner);
+      app.caches.setResource('lawyerExhibition', lawyerExhibition);
     };
     app.caches.refresh();
     app.caches.setResource('indexPageBanner', indexPageBanner);
-    // app.caches.setResource('lawyerExhibition', lawyerExhibition);
     app.caches.setResource('payPage', payPage);
     app.caches.setResource('indexPage', indexPage);
     /*
