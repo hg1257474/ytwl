@@ -110,8 +110,10 @@ module.exports = app => {
       let lawyerExhibition = await ctx.model.Resource.findOne({
         category: 'lawyerExhibition'
       }).exec();
+      console.log(lawyerExhibition.content, ctx.params.id);
       const position = lawyerExhibition.content.indexOf(ctx.params.id);
       if (position > -1) {
+        console.log('start');
         lawyerExhibition.content.splice(position, 1);
         await lawyerExhibition.save();
         lawyerExhibition = {
