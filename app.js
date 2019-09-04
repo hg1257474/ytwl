@@ -84,12 +84,17 @@ module.exports = app => {
       });
     }
     app.caches.refresh = async () => {
-      let lawyerExhibition = await Resource.findOne({ category: 'lawyerExhibition' }).exec();
+      lawyerExhibition = await Resource.findOne({ category: 'lawyerExhibition' }).exec();
+      const lawyers = [];
+      for (const id of lawyerExhibition.content) {
+        lawyers.push(
+          await Servicer.findById(id)
+            .select('avatar expert name')
+            .lean()
+        );
+      }
       lawyerExhibition = {
-        content: await Servicer.find(
-          { _id: { $in: lawyerExhibition.content } },
-          { avatar: 1, expert: 1, name: 1 }
-        ).lean(),
+        content: lawyers,
         updatedAt: lawyerExhibition.updatedAt
       };
       app.caches.setResource('lawyerExhibition', lawyerExhibition);
