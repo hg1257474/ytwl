@@ -90,14 +90,15 @@ module.exports = app => {
         }
         lawyerExhibition.markModified('content');
         await lawyerExhibition.save();
-        lawyerExhibition = {
-          content: await ctx.model.Servicer.find(
-            { _id: { $in: lawyerExhibition.content } },
-            { avatar: 1, expert: 1, name: 1 }
-          ).lean(),
-          updatedAt: lawyerExhibition.updatedAt
-        };
-        app.caches.setResource('lawyerExhibition', lawyerExhibition);
+        app.caches.refresh();
+        // lawyerExhibition = {
+        //   content: await ctx.model.Servicer.find(
+        //     { _id: { $in: lawyerExhibition.content } },
+        //     { avatar: 1, expert: 1, name: 1 }
+        //   ).lean(),
+        //   updatedAt: lawyerExhibition.updatedAt
+        // };
+        // app.caches.setResource('lawyerExhibition', lawyerExhibition);
       }
       delete body.lawyerExhibitionOrder;
       await ctx.model.Servicer.findByIdAndUpdate(ctx.params.id, body).exec();

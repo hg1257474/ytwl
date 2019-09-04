@@ -70,21 +70,33 @@ module.exports = app => {
       });
       await lawyerExhibition.save();
     }
-    lawyerExhibition = {
-      content: await Servicer.find(
-        { _id: { $in: lawyerExhibition.content } },
-        { avatar: 1, expert: 1, name: 1 }
-      ).lean(),
-      updatedAt: lawyerExhibition.updatedAt
-    };
+    // lawyerExhibition = {
+    //   content: await Servicer.find(
+    //     { _id: { $in: lawyerExhibition.content } },
+    //     { avatar: 1, expert: 1, name: 1 }
+    //   ).lean(),
+    //   updatedAt: lawyerExhibition.updatedAt
+    // };
     let indexPageBanner = await Resource.findOne({ category: 'indexPageBanner' }).exec();
     if (!indexPageBanner) {
       indexPageBanner = new Resource({
         category: 'indexPageBanner'
       });
     }
+    app.caches.refresh = async () => {
+      let lawyerExhibition = await Resource.findOne({ category: 'lawyerExhibition' }).exec();
+      lawyerExhibition = {
+        content: await Servicer.find(
+          { _id: { $in: lawyerExhibition.content } },
+          { avatar: 1, expert: 1, name: 1 }
+        ).lean(),
+        updatedAt: lawyerExhibition.updatedAt
+      };
+      app.caches.setResource('indexPageBanner', indexPageBanner);
+    };
+    app.caches.refresh();
     app.caches.setResource('indexPageBanner', indexPageBanner);
-    app.caches.setResource('lawyerExhibition', lawyerExhibition);
+    // app.caches.setResource('lawyerExhibition', lawyerExhibition);
     app.caches.setResource('payPage', payPage);
     app.caches.setResource('indexPage', indexPage);
     /*
