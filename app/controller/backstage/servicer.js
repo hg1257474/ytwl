@@ -76,7 +76,7 @@ module.exports = app => {
       console.log(lawyerExhibition);
       const position = lawyerExhibition.content.findIndex(item => {
         console.log(item);
-        return item.toString() === body.id;
+        return item.toString() === body.id.toString();
       });
       console.log(position);
       if (body.lawyerExhibitionOrder > 0 || position !== body.lawyerExhibitionOrder - 1) {
@@ -86,7 +86,7 @@ module.exports = app => {
         }
         if (body.lawyerExhibitionOrder) {
           console.log('log2');
-          lawyerExhibition.content.splice(body.lawyerExhibitionOrder - 1, 0, body.id);
+          lawyerExhibition.content.splice(body.lawyerExhibitionOrder - 1, 0, body.id.toString());
         }
         lawyerExhibition.markModified('content');
         await lawyerExhibition.save();
@@ -111,7 +111,9 @@ module.exports = app => {
         category: 'lawyerExhibition'
       }).exec();
       console.log(lawyerExhibition.content, ctx.params.id);
-      const position = lawyerExhibition.content.indexOf(ctx.params.id);
+      const position = lawyerExhibition.content.findIndex(
+        item => item.toString() === ctx.params.id.toString()
+      );
       if (position > -1) {
         console.log('start');
         lawyerExhibition.content.splice(position, 1);
