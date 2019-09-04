@@ -117,16 +117,9 @@ module.exports = app => {
       if (position > -1) {
         console.log('start');
         lawyerExhibition.content.splice(position, 1);
+        lawyerExhibition.markModified('content');
         await lawyerExhibition.save();
-        lawyerExhibition = {
-          content: await ctx.model.Servicer.find(
-            { _id: { $in: lawyerExhibition.content } },
-            { avatar: 1, expert: 1, name: 1 }
-          ).lean(),
-          updatedAt: lawyerExhibition.updatedAt
-        };
-
-        app.caches.setResource('lawyerExhibition', lawyerExhibition);
+        app.caches.refresh();
       }
       await ctx.model.Servicer.findByIdAndDelete(ctx.params.id).exec();
       ctx.body = 'success';
