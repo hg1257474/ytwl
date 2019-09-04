@@ -90,7 +90,6 @@ module.exports = app => {
         }
         lawyerExhibition.markModified('content');
         await lawyerExhibition.save();
-        app.caches.refresh();
         // lawyerExhibition = {
         //   content: await ctx.model.Servicer.find(
         //     { _id: { $in: lawyerExhibition.content } },
@@ -100,6 +99,7 @@ module.exports = app => {
         // };
         // app.caches.setResource('lawyerExhibition', lawyerExhibition);
       }
+      app.caches.refresh();
       delete body.lawyerExhibitionOrder;
       await ctx.model.Servicer.findByIdAndUpdate(ctx.params.id, body).exec();
       ctx.body = 'success';
