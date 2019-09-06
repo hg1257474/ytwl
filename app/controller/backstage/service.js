@@ -16,7 +16,7 @@ module.exports = app => {
         matchArgs.push({ status: { $in: queries.isStatusFiltered } });
       }
       if (query.isNameFiltered) {
-        matchArgs.push({ name: { $all: queries.isNameFiltered } });
+        matchArgs.push({ name: { $all: ctx.helper.formatQueryArg(query.isNameFiltered) } });
       }
       if (query.isUpdatedAtFiltered) {
         matchArgs.push({
@@ -30,7 +30,7 @@ module.exports = app => {
         matchArgs = { $and: matchArgs };
         args.push({ $match: matchArgs });
       } else matchArgs = {};
-      console.log(matchArgs);
+      console.log(JSON.stringify(matchArgs));
       const total = await ctx.model.Service.find(matchArgs).countDocuments();
       args.push({
         $project: {

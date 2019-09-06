@@ -9,7 +9,9 @@ module.exports = app => {
       args.push({ $match: { conclusion: { $exists: true } } });
 
       if (query.isServiceNameFiltered) {
-        matchArgs.push({ serviceName: { $all: queries.isServiceNameFiltered } });
+        matchArgs.push({
+          serviceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) }
+        });
       }
       if (query.isProcessorFiltered) {
         matchArgs.push({ processor: query.isProcessorFiltered });

@@ -7,6 +7,10 @@ module.exports = app => {
   const { router, controller } = app;
   router.get('/backstage/servicer', controller.backstage.servicer.getServicers);
   router.get('/backstage/servicer/:id', controller.backstage.servicer.getServicer);
+  router.get(
+    '/backstage/servicer/:id/work_statistics',
+    controller.backstage.servicer.workStatistics
+  );
   router.post('/backstage/servicer', controller.backstage.servicer.addServicer);
   router.put('/backstage/servicer/:id', controller.backstage.servicer.updateServicer);
   router.del('/backstage/servicer/:id', controller.backstage.servicer.deleteServicer);

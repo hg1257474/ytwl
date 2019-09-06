@@ -61,6 +61,16 @@ module.exports = app => {
       let name = '';
       service.name.forEach(item => (name += `-${maps[item] || item}`));
       body.name = name.slice(1);
+      // can input duration
+      if (
+        service.status === 'end' &&
+        !service.duration &&
+        oIdEqual(entity._id, service.processorId)
+      ) {
+        body.canInputDuration = true;
+      }
+      // can view duration
+      if (!oIdEqual(service.customerId, entity._id)) body.duration = service.duration;
       // payment view
       if (!oIdEqual(entity._id, service.processorId)) {
         body.payment = await Order.findById(service.orderId, {
@@ -132,8 +142,11 @@ module.exports = app => {
         case 'comment':
           service.comment = body;
           break;
+        case 'duration':
+          service.duration = body.duration;
+          break;
         case 'payment': {
-          if (service.status !== 'end') {
+          if (service.status !== 'processing') {
             if (service.status === 'wait_quote') service.status = 'wait_pay';
             let name = '';
             service.name.forEach(item => (name += `-${maps[item] || item}`));

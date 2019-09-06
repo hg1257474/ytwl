@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = app => {
   class Controller extends app.Controller {
     // GET start end
@@ -6,6 +8,7 @@ module.exports = app => {
       const { query, queries } = ctx;
       const args = [];
       let matchArgs = [];
+      if (query.servicerId) matchArgs.push({ _id: app.mongoose.Types.ObjectId(query.servicerId) });
       if (query.isNameFiltered) matchArgs.push({ name: query.isNameFiltered });
       if (query.isUsernameFiltered) matchArgs.push({ username: query.isUsernameFiltered });
       if (query.privilegeFilter)
@@ -70,7 +73,7 @@ module.exports = app => {
       console.log(body);
       if (body.avatar && body.avatar[1].includes('base64'))
         body.avatar[1] = await ctx.service.file.create(body.avatar[1], 'lawyer_avatar');
-      let lawyerExhibition = await ctx.model.Resource.findOne({
+      const lawyerExhibition = await ctx.model.Resource.findOne({
         category: 'lawyerExhibition'
       }).exec();
       console.log(lawyerExhibition);
@@ -107,7 +110,7 @@ module.exports = app => {
 
     async deleteServicer() {
       const { ctx } = this;
-      let lawyerExhibition = await ctx.model.Resource.findOne({
+      const lawyerExhibition = await ctx.model.Resource.findOne({
         category: 'lawyerExhibition'
       }).exec();
       console.log(lawyerExhibition.content, ctx.params.id);
@@ -128,6 +131,75 @@ module.exports = app => {
     async getServicer() {
       const { ctx } = this;
       ctx.body = await ctx.model.Servicer.findById(ctx.params.id).exec();
+    }
+
+    async workStatistics() {
+      const { ctx } = this;
+      let services = await ctx.model.Servicer.findById(ctx.params.id)
+        .select('services')
+        .lean();
+      const now = moment();
+      let startDate;
+      switch (ctx.query.period) {
+        case 'month':
+          startDate = now.subtract(1, 'months');
+          break;
+        case 'quarter':
+          startDate = now.subtract(3, 'months');
+          break;
+        case 'year':
+          startDate = now.subtract(1, 'years');
+          break;
+        default:
+          throw Error('period');
+      }
+      services = await ctx.model.Service.find({
+        status: 'end',
+        _id: { $in: services.services },
+        $expr: {
+          $gte: ['$updatedAt', startDate]
+        }
+      })
+        .select('orderId comment duration')
+        .exec();
+      console.log(services);
+      const orderIds = [];
+      let durationTotal = 0;
+      let commentCount = 0;
+      const averageComment = [0, 0, 0];
+      services.forEach(service => {
+        durationTotal += service.duration;
+        orderIds.push(service.orderId);
+        if (service.comment.length) {
+          commentCount += 1;
+          console.log(service.comment);
+          averageComment.forEach(function a(item, index) {
+            averageComment[index] = item + service.comment[index];
+          });
+        }
+      });
+      console.log(orderIds);
+      const salesTotal = await ctx.model.Order.aggregate([
+        {
+          $match: {
+            _id: { $in: orderIds }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$totalFee' }
+          }
+        }
+      ]);
+      ctx.body = {
+        serviceTotal: services.length,
+        durationTotal,
+        averageComment: commentCount
+          ? averageComment.map(item => item / commentCount)
+          : averageComment,
+        salesTotal: salesTotal.length && salesTotal[0].total
+      };
     }
   }
   return Controller;

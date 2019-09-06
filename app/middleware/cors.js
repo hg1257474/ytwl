@@ -4,6 +4,7 @@ module.exports = options => {
     //onsole.log(ctx.request.body);
     console.log(ctx.request.href);
     console.log(ctx.method);
+    console.log(ctx.app.cache);
     if (
       ctx.header.cookie &&
       ctx.header.cookie.includes('EGG_SESS') &&

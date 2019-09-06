@@ -11,7 +11,7 @@ module.exports = app => {
       }
       matchArgs.push({ hasPaid: true });
       if (query.isNameFiltered) {
-        const regexStr = query.isNameFiltered.replace(/\s+/g, '|');
+        const regexStr = `.*${query.isNameFiltered.replace(/-|\s+/g, '.*')}.*`;
         matchArgs.push({ name: { $regex: new RegExp(regexStr) } });
       }
       if (query.updatedAtFilter) {
@@ -37,13 +37,13 @@ module.exports = app => {
           as: 'customer'
         }
       });
-      args.push({
-        $match: {
-          $expr: {
-            $gt: [{ $size: '$customer' }, 0]
-          }
-        }
-      });
+      // args.push({
+      //   $match: {
+      //     $expr: {
+      //       $gt: [{ $size: '$customer' }, 0]
+      //     }
+      //   }
+      // });
       args.push({
         $project: {
           name: 1,
@@ -68,8 +68,9 @@ module.exports = app => {
       args.push({ $sort });
       args.push({ $skip: (query.current - 1) * 10 });
       args.push({ $limit: 10 });
-      console.log(args);
+      console.log(JSON.stringify(args));
       const orders = await ctx.model.Order.aggregate(args);
+      console.log(orders.length);
       ctx.body = { orders, total };
     }
   }

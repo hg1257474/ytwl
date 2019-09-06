@@ -10,6 +10,7 @@ module.exports = ({ mongoose }) => {
       comment: [],
       description: mongoose.Schema.Types.Mixed,
       conclusion: {},
+      duration: { type: Number, default: 0 },
       contact: {
         name: String,
         phone: Number,

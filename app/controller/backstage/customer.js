@@ -6,6 +6,9 @@ module.exports = app => {
       const { query, queries } = ctx;
       const args = [];
       let matchArgs = [];
+      if (query.customerId) {
+        matchArgs.push({ _id: app.mongoose.Types.ObjectId(query.customerId) });
+      }
       if (query.companyFilter) {
         const regexStr = query.companyFilter.replace(/\s+/g, '|');
         matchArgs.push({ 'info.company': { $regex: new RegExp(regexStr) } });
