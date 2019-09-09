@@ -137,6 +137,7 @@ module.exports = app => {
         }
       } = this;
       const service = await Service.findById(ctx.params.id).exec();
+      console.log(service)
       const customer = await Customer.findById(service.customerId).exec();
       switch (ctx.params.target) {
         case 'status': {
@@ -157,7 +158,7 @@ module.exports = app => {
             if (service.status === 'wait_quote') {
               console.log(11);
               service.status = 'wait_pay';
-              customer.waitPayTotal += customer.waitPayTotal;
+              customer.waitPayTotal += 1;
               customer.markModified('waitPayTotal');
               await customer.save();
             }
