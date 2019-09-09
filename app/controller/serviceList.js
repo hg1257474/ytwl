@@ -27,10 +27,13 @@ module.exports = app => {
       };
       if (user.privilege && user.privilege.canAssignService) $match = {};
       const statusMatchArgs = ctx.query.status === 'all' ? {} : { status: ctx.query.status };
+      const serviceTypeMatchArgs =
+        ctx.query.serviceType === 'all' ? {} : { $in: [ctx.query.serviceType, '$nameF'] };
       console.log(statusMatchArgs, $match);
       ctx.body = await Service.aggregate([
         { $match },
         { $match: statusMatchArgs },
+        { $match: serviceTypeMatchArgs },
         {
           $project: {
             status: 1,

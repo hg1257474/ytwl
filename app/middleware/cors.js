@@ -45,7 +45,6 @@ module.exports = options => {
     });
 
     //ctx.response.set("Content-Type","text/plain;charset=utf-8")
-
     //if (ctx.method === 'OPTIONS')
     // if (ctx.request.url.includes("/resource/") || ctx.request.url.includes("/test"))
     //ctx.set({

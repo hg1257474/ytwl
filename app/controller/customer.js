@@ -77,11 +77,11 @@ module.exports = app => {
       });
       ctx.body = {
         vip: customer.vip,
-        isAllInfo
+        isAllInfo,
+        noViewedEnd: customer.noViewedEnd,
+        waitPayTotal: customer.waitPayTotal
       };
       const resource = app.caches.getResource('indexPage');
-      console.log(resource.updatedAt.toString());
-      console.log(ctx.request.body.expires);
       if (resource.updatedAt.toString() !== ctx.request.body.expires) {
         ctx.body.indexPage = resource.content;
         ctx.body.expires = resource.updatedAt.toString();
@@ -208,6 +208,7 @@ module.exports = app => {
           const service = await this.ctx.model.Service.findById(order.description.serviceId).exec();
           service.status = 'wait_assign';
           points = '服务支付';
+          customer.waitPayTotal -= 1;
           await service.save();
         } else if (order.description.balance) {
           vip = { balance: 1 };

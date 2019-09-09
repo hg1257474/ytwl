@@ -28,15 +28,12 @@ module.exports = app => {
 
       const body = {};
       const service = await Service.findById(ctx.params.id).exec();
-      //console.log(service)
-      //service.description="dddddddddd"
-      // console.log(service.description);
       // get description
       body.description = service.description;
       // processor view
       if (service.processorId) {
         // customer view
-        if (!entity.privilege)
+        if (!entity.privilege) {
           body.processor = await Servicer.findById(service.processorId, {
             name: 1,
             avatar: 1,
@@ -45,6 +42,11 @@ module.exports = app => {
             expert: 1,
             _id: 0
           }).lean();
+          if (service.status === 'end') {
+            entity.noViewedEnd = entity.noViewedEnd.filter(item => oIdEqual(item, service._id));
+            await entity.save();
+          }
+        }
         // manager view
         else if (!oIdEqual(entity._id, service.processorId)) {
           const temp = await Servicer.findById(service.processorId, {
@@ -130,15 +132,20 @@ module.exports = app => {
         ctx: {
           session: { entity },
           service: { pay },
-          model: { Service, Servicer },
+          model: { Service, Servicer, Customer },
           request: { body }
         }
       } = this;
       const service = await Service.findById(ctx.params.id).exec();
+      const customer = await Customer.findById(service.customerId).exec();
       switch (ctx.params.target) {
-        case 'status':
+        case 'status': {
           service.status = 'end';
+          customer.noViewedEnd.push(service._id);
+          customer.markModified('noViewedEnd');
+          await customer.save();
           break;
+        }
         case 'comment':
           service.comment = body;
           break;
@@ -147,7 +154,11 @@ module.exports = app => {
           break;
         case 'payment': {
           if (service.status !== 'processing') {
-            if (service.status === 'wait_quote') service.status = 'wait_pay';
+            if (service.status === 'wait_quote') {
+              service.status = 'wait_pay';
+              customer.waitPayTotal += customer.waitPayTotal;
+              await customer.save();
+            }
             let name = '';
             service.name.forEach(item => (name += `-${maps[item] || item}`));
             const orderId = await pay.new(body.fee, service.customerId, name.slice(1), {
@@ -170,15 +181,11 @@ module.exports = app => {
         }
 
         case 'processor': {
-          console.log(this);
-          console.log(this.ctx);
-          //console.log(ctx)
           if (service.processorId) {
             const servicer = await Servicer.findById(service.processorId).exec();
             servicer.services = servicer.services.filter(item => !oIdEqual(item, service._id));
             await servicer.save();
           }
-          console.log(this.ctx.request.body);
           const _body = this.ctx.request.body;
           service.processorId = _body.processorId;
           service.status = 'processing';

@@ -20,6 +20,11 @@ module.exports = ({ mongoose }) => {
         weChat: { type: String, default: '' },
         dingTalk: { type: String, default: '' }
       },
+      noViewedEnd: [],
+      waitPayTotal: {
+        type: Number,
+        default: 0
+      },
       orders: [mongoose.Schema.Types.ObjectId],
       services: [mongoose.Schema.Types.ObjectId],
       points: { total: { type: Number, default: 0 }, records: [] }
