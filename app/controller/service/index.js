@@ -28,6 +28,7 @@ module.exports = app => {
 
       const body = {};
       const service = await Service.findById(ctx.params.id).exec();
+      console.log(service);
       // get description
       body.description = service.description;
       // processor view
@@ -137,7 +138,7 @@ module.exports = app => {
         }
       } = this;
       const service = await Service.findById(ctx.params.id).exec();
-      console.log(service)
+      console.log(service);
       const customer = await Customer.findById(service.customerId).exec();
       switch (ctx.params.target) {
         case 'status': {
