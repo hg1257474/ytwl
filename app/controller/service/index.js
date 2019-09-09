@@ -155,8 +155,10 @@ module.exports = app => {
         case 'payment': {
           if (service.status !== 'processing') {
             if (service.status === 'wait_quote') {
+              console.log(11);
               service.status = 'wait_pay';
               customer.waitPayTotal += customer.waitPayTotal;
+              customer.markModified('waitPayTotal');
               await customer.save();
             }
             let name = '';
