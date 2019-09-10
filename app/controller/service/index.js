@@ -45,7 +45,7 @@ module.exports = app => {
           }).lean();
           if (service.status === 'end') {
             console.log(entity);
-            entity.noViewedEnd = entity.noViewedEnd.filter(item => oIdEqual(item, service._id));
+            entity.noViewedEnd = entity.noViewedEnd.filter(item => !oIdEqual(item, service._id));
             entity.markModified('noViewedEnd');
             await entity.save();
           }
