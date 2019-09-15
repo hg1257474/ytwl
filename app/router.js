@@ -33,6 +33,7 @@ module.exports = app => {
   );
   router.get('/resource/:target/:id/:name', controller.other.resource);
   router.get('/backstage/conclusion', controller.backstage.conclusion.index);
+  router.get('/backstage/conclusion/archive/:filename', controller.backstage.conclusion.archive);
   router.get('/backstage/conclusion/:id', controller.backstage.conclusion.detail);
   router.get('/servicer/official_account', controller.servicer.officialAccount);
   router.post('/servicer/official_account', controller.servicer.officialAccount);
@@ -40,6 +41,7 @@ module.exports = app => {
   router.get('/backstage/customer/:id', controller.backstage.customer.info);
   router.get('/backstage/order', controller.backstage.order.index);
   router.get('/backstage/service', controller.backstage.service.index);
+  router.get('/backstage/service/name_group', controller.backstage.service.nameGroup);
   router.get('/backstage/service/:id', controller.backstage.service.detail);
   router.get('/resource_test/:id', controller.test.getFile);
   router.get('/service/pay_config', controller.customer.servicePayConfig);

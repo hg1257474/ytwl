@@ -68,6 +68,10 @@ module.exports = app => {
       console.log(service);
       ctx.body = service;
     }
+
+    async nameGroup() {
+      this.ctx.body = app.caches.getResource('indexPage').content.map(item => item[0]);
+    }
   }
   return Controller;
 };

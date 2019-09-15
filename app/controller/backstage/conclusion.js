@@ -1,16 +1,30 @@
+const fs = require('fs');
+const officegen = require('officegen');
 module.exports = app => {
   class Controller extends app.Controller {
     // GET start end
     async index() {
       const { ctx } = this;
-      const { query, queries } = ctx;
+      const { query } = ctx;
       const args = [];
-      let matchArgs = [];
-      args.push({ $match: { conclusion: { $exists: true } } });
-
+      const matchArgs = [];
+      args.push({
+        $match: { conclusion: { $exists: true }, name: { $all: [ctx.query.category] } }
+      });
       if (query.isServiceNameFiltered) {
         matchArgs.push({
-          serviceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) }
+          $or: [
+            { serviceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) } },
+            {
+              description: {
+                $regex: new RegExp(
+                  ctx.helper
+                    .formatQueryArg(query.isServiceNameFiltered)
+                    .reduce((prev, cur) => prev + `(?=.*${cur})`, '')
+                )
+              }
+            }
+          ]
         });
       }
       if (query.isProcessorFiltered) {
@@ -30,6 +44,7 @@ module.exports = app => {
       args.push({
         $project: {
           serviceName: '$name',
+          description: 1,
           processor: {
             $let: {
               vars: {
@@ -49,6 +64,7 @@ module.exports = app => {
       args.push({ $sort: { _id: -1 } });
       args.push({ $skip: (query.current - 1) * 10 });
       args.push({ $limit: 10 });
+      args.push({ $project: { description: 0 } });
       console.log(args);
       const conclusions = await ctx.model.Service.aggregate(args);
       ctx.body = { conclusions, total: total[0] ? total[0].total : 0 };
@@ -61,6 +77,77 @@ module.exports = app => {
         .select('name')
         .exec()).name;
       ctx.body = service;
+    }
+
+    async archive() {
+      const { ctx } = this;
+      const args = [];
+      const docx = officegen('docx');
+      args.push({
+        $match: { conclusion: { $exists: true }, name: { $all: ['communication'] } }
+      });
+      args.push({
+        $match: {
+          $expr: { $not: [{ $eq: [{ $arrayElemAt: ['$conclusion', 0] }, null] }] },
+          updatedAt: {
+            $gte: new Date(ctx.params.filename.split('至')[0]),
+            $lte: new Date(ctx.params.filename.split('至')[1].split('.')[0])
+          }
+        }
+      });
+
+      args.push({
+        $lookup: {
+          from: 'servicers',
+          let: { processorId: '$processorId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$processorId'] } } },
+            { $project: { name: 1, _id: 0 } }
+          ],
+          as: 'processor'
+        }
+      });
+      args.push({
+        $project: {
+          serviceName: '$name',
+          description: 1,
+          conclusion: { $arrayElemAt: ['$conclusion', 0] },
+          processor: {
+            $let: {
+              vars: {
+                processor: { $arrayElemAt: ['$processor', 0] }
+              },
+              in: '$$processor.name'
+            }
+          }
+        }
+      });
+      args.push({ $sort: { _id: -1 } });
+      for (const conclusion of await ctx.model.Service.aggregate(args)) {
+        let pObj = docx.createP({ align: 'center' });
+        pObj.addText(`${conclusion.serviceName[0]}-${conclusion.serviceName[1]}`, {
+          font_size: 20
+        });
+        pObj = docx.createP({ align: 'right' });
+        pObj.addText(conclusion.processor, { font_size: 16 });
+        pObj = docx.createP();
+        pObj.addText('问题描述：', { font_size: 18 });
+        pObj = docx.createP();
+        pObj.addText(conclusion.description, { font_size: 14 });
+        pObj = docx.createP();
+        pObj.addText('律师回复：', { font_size: 18 });
+        pObj = docx.createP();
+        pObj.addText(conclusion.conclusion, { font_size: 14 });
+      }
+      const filename = `/resource/temp/${new Date().getTime()}${ctx.params.filename}`;
+      await new Promise(resolve => {
+        const out = fs.createWriteStream(filename);
+        out.on('close', () => {
+          ctx.body = fs.readFileSync(filename);
+          resolve();
+        });
+        docx.generate(out);
+      });
     }
   }
 
