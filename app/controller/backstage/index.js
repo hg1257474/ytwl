@@ -13,6 +13,25 @@ function getMonthSales(Conclusion){
 module.exports = app => {
   class Controller extends app.Controller {
     // GET start end
+    async login() {
+      const { ctx } = this;
+      console.log(ctx.request.body);
+      console.log(ctx.session.entity);
+      if (ctx.session.entity) ctx.body = '301';
+      else {
+        const user = await ctx.model.Servicer.findOne({
+          username: ctx.request.body.username,
+          password: ctx.request.body.password
+        }).exec();
+        console.log(user);
+        if (user) {
+          console.log('dsds');
+          ctx.session = { entity: user };
+        }
+        ctx.body = user ? '301' : '401';
+      }
+    }
+
     async index() {
       /*
       const { ctx } = this;

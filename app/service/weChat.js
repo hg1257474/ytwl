@@ -133,10 +133,9 @@ class WeChatService extends Service {
         // sign
         body: order.name,
         out_trade_no: order._id.toString(),
-        total_fee:
-          (order.description.pointDeduction
-            ? order.totalFee - order.description.pointDeduction
-            : order.totalFee) * 100,
+        total_fee: order.description.pointDeduction
+          ? order.totalFee * 100 - order.description.pointDeduction * 100
+          : order.totalFee * 100,
         spbill_create_ip: ip,
         notify_url: config.weChatPay.callbackUrl,
         trade_type: 'JSAPI',

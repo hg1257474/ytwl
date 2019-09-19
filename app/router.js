@@ -5,6 +5,7 @@
  */
 module.exports = app => {
   const { router, controller } = app;
+  router.post('/backstage/login', controller.backstage.index.login);
   router.get('/backstage/servicer', controller.backstage.servicer.getServicers);
   router.get('/backstage/servicer/:id', controller.backstage.servicer.getServicer);
   router.get(

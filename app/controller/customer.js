@@ -172,16 +172,37 @@ module.exports = app => {
         }
       } = this;
       const orders = [];
-      // console.log(entity)
       for (const orderId of entity.orders) {
         const order = await Order.findById(orderId).exec();
-        orders.push([
-          order.name,
-          `${order.createdAt.getFullYear()}年${order.createdAt.getMonth() +
-            1}月${order.createdAt.getDate()}日`,
-          order.totalFee,
-          order._id.toString()
-        ]);
+        const { description } = order;
+        let flag = false;
+        if (!ctx.query.typeFiltered) flag = true;
+        else {
+          switch (ctx.query.typeFiltered) {
+            case 'contract':
+              flag = !!description.serviceId;
+              break;
+            case 'communication':
+              flag = !!description.balance;
+              break;
+            case 'monthVip':
+              flag = !!description.monthVip;
+              break;
+            case 'yearVip':
+              flag = !!description.yearVip;
+              break;
+            default:
+              throw new Error('order description error');
+          }
+        }
+        if (flag)
+          orders.push([
+            order.name,
+            `${order.createdAt.getFullYear()}年${order.createdAt.getMonth() +
+              1}月${order.createdAt.getDate()}日`,
+            order.totalFee,
+            order._id.toString()
+          ]);
       }
       ctx.body = orders;
     }
