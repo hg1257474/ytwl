@@ -42,7 +42,7 @@ module.exports = app => {
       const newOrder = await Order.create(order);
       service.orderId = newOrder._id;
       await service.save();
-      if (ctx.query.pointDeduction && !(order.totalFee - ctx.query.pointDeduction))
+      if (ctx.query.pointDeduction && !(order.totalFee * 100 - ctx.query.pointDeduction * 100))
         ctx.redirect(`/customer/payment?orderId=${newOrder._id}`);
       else ctx.body = await this.ctx.service.weChat.getPayConfig(newOrder);
     }
@@ -114,7 +114,10 @@ module.exports = app => {
       const order = await Order.findById(orderId).exec();
       // order.description.orderId = order._id.toString();
       // await order.save();
-      if (order.description.pointDeduction && !(order.totalFee - order.description.pointDeduction))
+      if (
+        order.description.pointDeduction &&
+        !(order.totalFee * 100 - order.description.pointDeduction * 100)
+      )
         ctx.redirect(`/customer/payment?orderId=${order._id}`);
       else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
     }
