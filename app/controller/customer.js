@@ -176,7 +176,7 @@ module.exports = app => {
         const order = await Order.findById(orderId).exec();
         const { description } = order;
         let flag = false;
-        if (!ctx.query.typeFiltered) flag = true;
+        if (ctx.query.typeFiltered == 0) flag = true;
         else {
           switch (ctx.query.typeFiltered) {
             case 'contract':
