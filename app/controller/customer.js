@@ -233,6 +233,9 @@ module.exports = app => {
           service.status = 'wait_assign';
           points = '服务支付';
           customer.waitPayTotal -= 1;
+          ctx
+            .getLogger('indexPageHintChangeLogger')
+            .info(`waitPayTotal————${customer._id.toString()}————subtract`, order.toJSON(), xml);
           await service.save();
         } else if (order.description.balance) {
           vip = { balance: 1 };

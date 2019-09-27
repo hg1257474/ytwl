@@ -50,7 +50,10 @@ module.exports = app => {
           }
         },
         {
-          $sort: { statusWeight: -1, updatedAt: -1 }
+          $sort:
+            ctx.query.updatedAtSort === 'ascend'
+              ? { updatedAt: 1 }
+              : { statusWeight: -1, updatedAt: -1 }
         },
         { $skip: parseInt(start, 10) },
         { $limit: 20 }

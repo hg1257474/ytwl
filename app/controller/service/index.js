@@ -46,6 +46,12 @@ module.exports = app => {
           if (service.status === 'end') {
             console.log(entity);
             entity.noViewedEnd = entity.noViewedEnd.filter(item => !oIdEqual(item, service._id));
+            ctx
+              .getLogger('indexPageHintChangeLogger')
+              .info(
+                `noViewedEnd————${service.customerId.toString()}————subtract`,
+                service.toJSON()
+              );
             entity.markModified('noViewedEnd');
             await entity.save();
           }
@@ -146,6 +152,9 @@ module.exports = app => {
         case 'status': {
           service.status = 'end';
           customer.noViewedEnd.push(service._id);
+          ctx
+            .getLogger('indexPageHintChangeLogger')
+            .info(`noViewedEnd————${customer._id.toString()}————add`, service.toJSON());
           customer.markModified('noViewedEnd');
           await customer.save();
           break;
@@ -162,6 +171,9 @@ module.exports = app => {
               console.log(11);
               service.status = 'wait_pay';
               customer.waitPayTotal += 1;
+              ctx
+                .getLogger('indexPageHintChangeLogger')
+                .info(`waitPayTotal————${customer._id.toString()}————add`, service.toJSON(), body);
               customer.markModified('waitPayTotal');
               await customer.save();
             }

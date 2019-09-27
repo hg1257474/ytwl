@@ -1,5 +1,6 @@
 const fs = require('fs');
 const officegen = require('officegen');
+
 module.exports = app => {
   class Controller extends app.Controller {
     // GET start end
@@ -14,13 +15,13 @@ module.exports = app => {
       if (query.isServiceNameFiltered) {
         matchArgs.push({
           $or: [
-            { serviceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) } },
+            { tServiceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) } },
             {
               description: {
                 $regex: new RegExp(
                   ctx.helper
                     .formatQueryArg(query.isServiceNameFiltered)
-                    .reduce((prev, cur) => prev + `(?=.*${cur})`, '')
+                    .reduce((prev, cur) => `${prev}(?=.*${cur})`, '')
                 )
               }
             }
@@ -43,8 +44,16 @@ module.exports = app => {
       });
       args.push({
         $project: {
-          serviceName: '$name',
-          description: 1,
+          tServiceName: '$name',
+          serviceName: {
+            $cond: {
+              if: {
+                $eq: ['review', { $arrayElemAt: ['$name', 3] }]
+              },
+              then: '$name',
+              else: '$description'
+            }
+          },
           processor: {
             $let: {
               vars: {
@@ -64,7 +73,6 @@ module.exports = app => {
       args.push({ $sort: { _id: -1 } });
       args.push({ $skip: (query.current - 1) * 10 });
       args.push({ $limit: 10 });
-      args.push({ $project: { description: 0 } });
       console.log(args);
       const conclusions = await ctx.model.Service.aggregate(args);
       ctx.body = { conclusions, total: total[0] ? total[0].total : 0 };
@@ -124,20 +132,15 @@ module.exports = app => {
       });
       args.push({ $sort: { _id: -1 } });
       for (const conclusion of await ctx.model.Service.aggregate(args)) {
-        let pObj = docx.createP({ align: 'center' });
-        pObj.addText(`${conclusion.serviceName[0]}-${conclusion.serviceName[1]}`, {
-          font_size: 20
+        let pObj = docx.createP({ indentFirstLine: 460 });
+        pObj.addText(`【${conclusion.serviceName[0]}】${conclusion.description}`, {
+          font_size: 12,
+          bold: true
         });
-        pObj = docx.createP({ align: 'right' });
-        pObj.addText(conclusion.processor, { font_size: 16 });
-        pObj = docx.createP();
-        pObj.addText('问题描述：', { font_size: 18 });
-        pObj = docx.createP();
-        pObj.addText(conclusion.description, { font_size: 14 });
-        pObj = docx.createP();
-        pObj.addText('律师回复：', { font_size: 18 });
-        pObj = docx.createP();
-        pObj.addText(conclusion.conclusion, { font_size: 14 });
+        pObj = docx.createP({ indentFirstLine: 575 });
+        pObj.addText(conclusion.conclusion, {
+          font_size: 12
+        });
       }
       const filename = `/resource/temp/${new Date().getTime()}${ctx.params.filename}`;
       await new Promise(resolve => {

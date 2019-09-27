@@ -14,6 +14,18 @@ module.exports = appInfo => {
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1555308285340_4405';
+  config.customLogger = {
+    indexPageHintChangeLogger: {
+      file: path.join(appInfo.root, 'logs/indexPageHintChange.log'),
+      formatter(meta) {
+        return `[${meta.date}] ${meta.message}`;
+      },
+      // ctx logger
+      contextFormatter(meta) {
+        return `[${meta.date}] [${meta.ctx.method} ${meta.ctx.url}] ${meta.message}`;
+      }
+    }
+  };
   config.multipart = {
     mode: 'file',
     fileSize: '10mb',
