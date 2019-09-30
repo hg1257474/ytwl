@@ -257,12 +257,18 @@ module.exports = app => {
         customer.orders.push(orderId);
         if (vip) customer.vip = { ...customer.vip, ...vip };
         const pointDeduction = order.description.pointDeduction || 0;
-        customer.consumption += order.totalFee - pointDeduction;
+        customer.consumption =
+          (customer.consumption * 100 + order.totalFee * 100 - pointDeduction * 100) / 100;
         if (pointDeduction)
           customer.points.records.push([`${points}积分抵扣`, order.createdAt, -pointDeduction]);
-        if (order.totalFee - pointDeduction > 0)
-          customer.points.records.push([points, order.createdAt, order.totalFee - pointDeduction]);
-        customer.points.total += order.totalFee - 2 * pointDeduction;
+        if ((order.totalFee * 100 - pointDeduction * 100) / 100 > 0)
+          customer.points.records.push([
+            points,
+            order.createdAt,
+            (order.totalFee * 100 - pointDeduction * 100) / 100
+          ]);
+        customer.points.total =
+          (customer.points.total * 100 + order.totalFee * 100 - 2 * pointDeduction * 100) / 100;
         await customer.save();
         await order.save();
       }

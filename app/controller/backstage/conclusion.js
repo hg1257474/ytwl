@@ -15,7 +15,7 @@ module.exports = app => {
       if (query.isServiceNameFiltered) {
         matchArgs.push({
           $or: [
-            { tServiceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) } },
+            { serviceName: { $all: ctx.helper.formatQueryArg(query.isServiceNameFiltered) } },
             {
               description: {
                 $regex: new RegExp(
@@ -44,16 +44,8 @@ module.exports = app => {
       });
       args.push({
         $project: {
-          tServiceName: '$name',
-          serviceName: {
-            $cond: {
-              if: {
-                $eq: ['review', { $arrayElemAt: ['$name', 3] }]
-              },
-              then: '$name',
-              else: '$description'
-            }
-          },
+          serviceName: '$name',
+          description: 1,
           processor: {
             $let: {
               vars: {
