@@ -47,7 +47,7 @@ module.exports = options => {
       // "Access-Control-Allow-Origin": "http://www.huishenghuo.net:3000",
       // 'Access-Control-Allow-Origin': 'http://192.168.99.157:8000',
       // 'Access-Control-Allow-Origin': 'http://192.168.0.29:8000',
-      'Access-Control-Allow-Origin': 'http://backstage.cyfwg.com:8000',
+      'Access-Control-Allow-Origin': 'http://backstage.cyfwg.com',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Allow-Headers': 'Content-Type,X-Requested-With',
       'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE,OPTIONS'
