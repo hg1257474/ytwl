@@ -32,6 +32,7 @@ module.exports = app => {
     '/client_mini_program/index_page_banner',
     controller.clientMiniProgram.indexPageBanner
   );
+  router.post('/file', controller.file.upload);
   router.get('/resource/:target/:id/:name', controller.other.resource);
   router.get('/backstage/conclusion', controller.backstage.conclusion.index);
   router.get('/backstage/conclusion/archive/:filename', controller.backstage.conclusion.archive);
@@ -67,7 +68,7 @@ module.exports = app => {
   router.put('/customer/payment', controller.customer.payment);
   router.get('/customer/orders', controller.customer.orders);
   router.get('/order/:id', controller.customer.order);
-  router.get('/download_page', controller.file.download_page);
+  // router.get('/download_page', controller.file.download_page);
   //
   router.get('/customer/points_total', controller.customer.pointsTotal);
   router.get('/customer/points_records', controller.customer.pointsRecords);
