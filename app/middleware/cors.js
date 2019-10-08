@@ -34,7 +34,7 @@ module.exports = options => {
           let data = '';
           ctx.req.on('data', chunk => (data += chunk));
           ctx.req.on('end', () => {
-            console.log(data.toString('utf-8'));
+            // console.log(data.toString('utf-8'));
             ctx.xml = data.toString('utf-8');
             resolve(data.toString('utf-8'));
           });

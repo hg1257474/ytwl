@@ -5,17 +5,22 @@ module.exports = app => {
   class Controller extends app.Controller {
     async wc() {
       const { ctx } = this;
-
-      console.log(ctx.request.body);
       console.log(await ctx.parseXml());
-      console.log('ok i just want fuck you');
-      const res = `<xml>
+      const msg = /Content><\!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
+      console.log(msg);
+      let res = 'success';
+      if (/^下载-(.+)$/.test(msg)) {
+        console.log(app.caches.getResource('indexPage'));
+        res = `<xml>
       <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
-      <FromUserName><![CDATA[gh_2c5465869310]]></FromUserName>
+      <FromUserName><![CDATA[${
+        /ToUserName><\!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
+      }]]></FromUserName>
       <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
       <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[http://dota2.dl.wanmei.com/dota2/client/DOTA2Setup20190708.rar]]></Content>
+      <Content><![CDATA[http://www.cyfwg.com/resource/free/:id/:name]]></Content>
     </xml>`;
+      }
       console.log(res);
       ctx.body = res;
     }
