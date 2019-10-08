@@ -11,8 +11,8 @@ module.exports = app => {
       console.log('ok i just want fuck you');
       const res = `<xml>
       <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
-      <FromUserName><![CDATA[wx69ecfe4e48d6981d]]></FromUserName>
-      <CreateTime>${new Date().getTime()}</CreateTime>
+      <FromUserName><![CDATA[gh_2c5465869310]]></FromUserName>
+      <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
       <MsgType><![CDATA[text]]></MsgType>
       <Content><![CDATA[你好]]></Content>
     </xml>`;
