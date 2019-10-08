@@ -7,6 +7,7 @@ module.exports = app => {
       const { ctx } = this;
 
       console.log(ctx.request.body);
+      console.log(await ctx.parseXml());
       console.log('ok i just want fuck you');
       ctx.body = 'success';
     }

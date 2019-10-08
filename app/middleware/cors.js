@@ -25,7 +25,8 @@ module.exports = options => {
     }
     if (
       ctx.request.url.includes('customer/payment') ||
-      ctx.request.url.includes('servicer/official_account')
+      ctx.request.url.includes('servicer/official_account') ||
+      ctx.request.url.includes('wc')
     ) {
       ctx.parseXml = () =>
         new Promise(resolve => {
