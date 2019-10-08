@@ -9,7 +9,15 @@ module.exports = app => {
       console.log(ctx.request.body);
       console.log(await ctx.parseXml());
       console.log('ok i just want fuck you');
-      ctx.body = 'success';
+      const res = `<xml>
+      <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
+      <FromUserName><![CDATA[wx69ecfe4e48d6981d]]></FromUserName>
+      <CreateTime>${new Date().getTime()}</CreateTime>
+      <MsgType><![CDATA[text]]></MsgType>
+      <Content><![CDATA[你好]]></Content>
+    </xml>`;
+      console.log(res);
+      ctx.body = res;
     }
 
     //  POST category
