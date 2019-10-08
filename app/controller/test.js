@@ -14,7 +14,7 @@ module.exports = app => {
       <FromUserName><![CDATA[gh_2c5465869310]]></FromUserName>
       <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
       <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[http://www.baidu.com]]></Content>
+      <Content><![CDATA[http://dota2.dl.wanmei.com/dota2/client/DOTA2Setup20190708.rar]]></Content>
     </xml>`;
       console.log(res);
       ctx.body = res;
