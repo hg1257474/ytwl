@@ -3,6 +3,10 @@ const path = require('path');
 
 module.exports = app => {
   class Controller extends app.Controller {
+    async wc() {
+      this.ctx.body = 'dax6JjNGJTAm795yPJ6m';
+    }
+
     //  POST category
     async test() {
       // console.log(this.ctx.session)
