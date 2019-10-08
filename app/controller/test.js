@@ -14,7 +14,7 @@ module.exports = app => {
       <FromUserName><![CDATA[gh_2c5465869310]]></FromUserName>
       <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
       <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[你好]]></Content>
+      <Content><![CDATA[http://www.baidu.com]]></Content>
     </xml>`;
       console.log(res);
       ctx.body = res;
