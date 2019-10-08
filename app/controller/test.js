@@ -6,19 +6,29 @@ module.exports = app => {
     async wc() {
       const { ctx } = this;
       console.log(await ctx.parseXml());
-      const msg = /Content><\!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
+      const msg = /Content><!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
       console.log(msg);
       let res = 'success';
-      if (/^下载-(.+)$/.test(msg)) {
-        console.log(app.caches.getResource('indexPage'));
+      if (/^下载(.+)$/.test(msg)) {
+        let resource = app.caches.getResource('indexPage');
+        resource.content[resource.content.length - 1][1].some(item => {
+          if (item[1] === /^下载(.+)$/.exec(msg)[1]) {
+            [, , , resource] = item;
+            return true;
+          }
+          return false;
+        });
+        console.log(resource);
         res = `<xml>
       <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
       <FromUserName><![CDATA[${
-        /ToUserName><\!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
+        /ToUserName><!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
       }]]></FromUserName>
       <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
       <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[http://www.cyfwg.com/resource/free/:id/:name]]></Content>
+      <Content><![CDATA[http://www.cyfwg.com/resource/free/${resource[1]}/${
+          resource[0]
+        }]]></Content>
     </xml>`;
       }
       console.log(res);
