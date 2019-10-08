@@ -10,8 +10,7 @@ module.exports = app => {
     // }
 
     async upload() {
-      this.ctx.body="ok"
-      console.log('hello');
+      this.ctx.body = this.ctx.request.files[0].filepath;
     }
   }
   return Controller;
