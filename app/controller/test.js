@@ -19,17 +19,34 @@ module.exports = app => {
           return false;
         });
         console.log(resource);
-        res = `<xml>
-      <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
-      <FromUserName><![CDATA[${
-        /ToUserName><!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
-      }]]></FromUserName>
-      <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
-      <MsgType><![CDATA[text]]></MsgType>
-      <Content><![CDATA[http://www.cyfwg.com/resource/free/${resource[1]}/${
-          resource[0]
-        }]]></Content>
-    </xml>`;
+        res = `
+        <xml>
+        <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
+          <FromUserName><![CDATA[${
+            /ToUserName><!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
+          }]]></FromUserName>
+<CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
+  <MsgType><![CDATA[news]]></MsgType>
+  <ArticleCount>1</ArticleCount>
+  <Articles>
+    <item>
+      <Title><![CDATA[${/^下载(.+)$/.exec(msg)[1]}]]></Title>
+      <Description><![CDATA[点击下载${/^下载(.+)$/.exec(msg)[1]}]]></Description>
+      <Url><![CDATA[http://www.cyfwg.com/resource/free/${resource[1]}/${resource[0]}]]></Url>
+    </item>
+  </Articles>
+</xml>`;
+        //     res = `<xml>
+        //   <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
+        //   <FromUserName><![CDATA[${
+        //     /ToUserName><!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
+        //   }]]></FromUserName>
+        //   <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
+        //   <MsgType><![CDATA[text]]></MsgType>
+        //   <Content><![CDATA[http://www.cyfwg.com/resource/free/${resource[1]}/${
+        //       resource[0]
+        //     }]]></Content>
+        // </xml>`;
       }
       console.log(res);
       ctx.body = res;
