@@ -4,8 +4,10 @@ const path = require('path');
 module.exports = app => {
   class Controller extends app.Controller {
     async wc() {
-      console.log(/echostr=([^&]+)/.exec(this.ctx.request.href)[1]);
-      this.ctx.body = /echostr=([^&]+)/.exec(this.ctx.request.href)[1];
+      const { ctx } = this;
+
+      console.log(ctx.request.body);
+      ctx.body = 'success';
     }
 
     //  POST category
