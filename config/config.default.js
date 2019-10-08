@@ -29,7 +29,7 @@ module.exports = appInfo => {
   config.multipart = {
     mode: 'file',
     fileSize: '10mb',
-    fileExtensions: ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.pdf', 'txt'],
+    fileExtensions: ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.pdf', '.txt'],
     tmpdir: path.join('/resource/tmp', os.tmpdir(), 'egg-multipart-tmp', appInfo.name),
     cleanSchedule: {
       cron: '0 30 4 * * *'

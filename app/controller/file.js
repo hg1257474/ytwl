@@ -10,6 +10,7 @@ module.exports = app => {
     // }
 
     async upload() {
+      this.ctx.body="ok"
       console.log('hello');
     }
   }
