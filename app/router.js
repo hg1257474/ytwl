@@ -70,6 +70,7 @@ module.exports = app => {
   router.get('/order/:id', controller.customer.order);
   // router.get('/download_page', controller.file.download_page);
   //
+  router.post('/wc', controller.test.wc);
   router.get('/wc', controller.test.wc);
   router.get('/customer/points_total', controller.customer.pointsTotal);
   router.get('/customer/points_records', controller.customer.pointsRecords);
