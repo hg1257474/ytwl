@@ -20,7 +20,15 @@ module.exports = app => {
             return false;
           })
         )
-          res = '此资源不存在';
+          res = `<xml>
+            <ToUserName><![CDATA[${/openid=(.+)/.exec(ctx.request.href)[1]}]]></ToUserName>
+            <FromUserName><![CDATA[${
+              /ToUserName><!\[CDATA\[(.+)\]\]><\/ToUserName/.exec(ctx.xml)[1]
+            }]]></FromUserName>
+            <CreateTime>${Math.floor(new Date().getTime() / 1000)}</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[此资源不存在]]></Content>
+          </xml>`;
         else {
           console.log(resource);
           res = `
