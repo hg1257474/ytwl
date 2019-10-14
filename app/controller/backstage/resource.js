@@ -52,7 +52,7 @@ module.exports = app => {
               if (item[1].includes('resource/tmp')) {
                 const uniqueId = this.app.methods.getUniqueId();
                 fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
-                body.term[1] = uniqueId;
+                item[1] = uniqueId;
               }
             });
           }
@@ -110,7 +110,7 @@ module.exports = app => {
               if (item[1].includes('resource/tmp')) {
                 const uniqueId = this.app.methods.getUniqueId();
                 fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
-                body.term[1] = uniqueId;
+                item[1] = uniqueId;
               }
             });
           }
