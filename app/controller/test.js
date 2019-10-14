@@ -13,10 +13,11 @@ module.exports = app => {
         let resource = app.caches.getResource('indexPage');
         if (
           !resource.content[resource.content.length - 1][1].some(item => {
+            console.log(item);
             if (
               item.some(sItem => {
                 if (sItem[0].includes(/^下载(.+)$/.exec(msg)[1])) {
-                  [, resource] = item;
+                  [, resource] = sItem;
                   return true;
                 }
                 return false;
