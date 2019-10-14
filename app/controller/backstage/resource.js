@@ -48,9 +48,13 @@ module.exports = app => {
         tempResource = resource.content;
         if (query.target === 'indexPageTerm') {
           if (body.termOther instanceof Array) {
-            const uniqueId = this.app.methods.getUniqueId();
-            fs.copyFileSync(body.termOther[1], `/resource/free/${uniqueId}`);
-            body.termOther[1] = uniqueId;
+            body.termOther.forEach(item => {
+              if (item[1].includes('resource/tmp')) {
+                const uniqueId = this.app.methods.getUniqueId();
+                fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
+                body.term[1] = uniqueId;
+              }
+            });
           }
           tempResource[body.oldCategory][1].splice(body.oldIndex, 1);
           tempResource[body.category][1].splice(body.index, 0, [
@@ -101,6 +105,15 @@ module.exports = app => {
         resource = this.app.caches.getResource('indexPage');
         tempResource = resource.content;
         if (body.term) {
+          if (body.termOther instanceof Array) {
+            body.termOther.forEach(item => {
+              if (item[1].includes('resource/tmp')) {
+                const uniqueId = this.app.methods.getUniqueId();
+                fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
+                body.term[1] = uniqueId;
+              }
+            });
+          }
           tempResource[body.category][1].splice(body.index, 0, [
             [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')],
             body.term,
