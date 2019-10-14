@@ -18,6 +18,7 @@ module.exports = app => {
               item[3].some(sItem => {
                 if (sItem[0].includes(/^下载(.+)$/.exec(msg)[1])) {
                   [, resource] = sItem;
+                  console.log(resource);
                   return true;
                 }
                 return false;
