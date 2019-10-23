@@ -31,12 +31,15 @@ module.exports = app => {
       const {
         ctx,
         ctx: {
-          model: { Service, Order }
+          model: { Service, Order, Customer }
         }
       } = this;
       const service = await Service.findById(ctx.query.id).exec();
       // console.log(service);
       const order = await Order.findById(service.orderId).lean();
+      const user = await Customer.findById(order.customerId).exec();
+      if (ctx.query.pointDeduction && ctx.query.pointDeduction > user.points.total)
+        throw new Error('503');
       if (ctx.query.pointDeduction) order.description.pointDeduction = ctx.query.pointDeduction;
       delete order._id;
       const newOrder = await Order.create(order);
@@ -105,7 +108,8 @@ module.exports = app => {
         return;
       }
       console.log(body);
-
+      if (body.description.pointDeduction && body.description.pointDeduction > entity.points.total)
+        throw new Error('503');
       const orderId = await this.ctx.service.pay.new(
         body.totalFee,
         entity._id,
@@ -117,18 +121,12 @@ module.exports = app => {
       console.log(order);
       // order.description.orderId = order._id.toString();
       // await order.save();
-      if (order.description.pointDeduction) {
-        if (
-          order.description.pointDeduction < 0 ||
-          order.totalFee * 100 - order.description.pointDeduction * 100 < 0
-        )
-          ctx.statusCode = 501;
-        else if (
-          order.description.pointDeduction >= 0 ||
-          order.totalFee * 100 - order.description.pointDeduction * 100 >= 0
-        )
-          ctx.redirect(`/customer/payment?orderId=${order._id}`);
-      } else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+      if (
+        order.description.pointDeduction &&
+        !(order.description.pointDeduction * 100 - order.totalFee * 100)
+      )
+        ctx.redirect(`/customer/payment?orderId=${order._id}`);
+      else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
     }
 
     async pushTest() {
