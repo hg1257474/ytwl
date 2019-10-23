@@ -5,6 +5,8 @@ module.exports = app => {
   class Controller extends app.Controller {
     async wc() {
       const { ctx } = this;
+      await ctx.parseXml();
+      console.log(ctx.xml);
       const msg = /Content><!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
       let res = 'success';
       if (/^下载(.+)$/.test(msg)) {
