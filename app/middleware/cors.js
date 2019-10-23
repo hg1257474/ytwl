@@ -14,7 +14,7 @@ module.exports = options => {
       return 1;
     }
     if (
-      ctx.request.href.includes('backstage@fuck@') &&
+      ctx.request.href.includes('backstage') &&
       ctx.method !== 'OPTIONS' &&
       !ctx.request.href.includes('login') &&
       !ctx.session.entity

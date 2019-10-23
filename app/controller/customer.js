@@ -26,6 +26,11 @@ module.exports = app => {
       ctx.body = isAllInfo.toString();
     }
 
+    async reminderTotal() {
+      this.ctx.body =
+        this.ctx.session.entity.noViewedEnd.length + this.ctx.session.entity.waitPayTotal;
+    }
+
     // GET
     async servicePayConfig() {
       const {

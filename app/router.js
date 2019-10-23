@@ -65,6 +65,7 @@ module.exports = app => {
   router.put('/customer/info', controller.customer.info);
   router.get('/customer/vip', controller.customer.vip);
   router.put('/customer/vip', controller.customer.vip);
+  router.get('/customer/reminder_total', controller.customer.reminderTotal);
   router.post('/customer/payment', controller.customer.payment);
   router.get('/customer/payment', controller.customer.payment);
   router.put('/customer/payment', controller.customer.payment);
