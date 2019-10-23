@@ -13,7 +13,7 @@ module.exports = app => {
         case 'POST':
           if (ctx.query.isDirect) ctx.body = ctx.request.files[0].filepath;
           else {
-            const id = this.app.methods.getUniqueId();
+            const id = ctx.helper.getUniqueId();
             _files[id] = {};
             ctx.body = id;
           }

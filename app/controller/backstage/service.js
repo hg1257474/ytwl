@@ -70,7 +70,7 @@ module.exports = app => {
     }
 
     async nameGroup() {
-      this.ctx.body = app.caches.getResource('indexPage').content.map(item => item[0]);
+      this.ctx.body = app.cache.indexPageColumn.content.map(item => item[0]);
     }
   }
   return Controller;

@@ -37,7 +37,7 @@ module.exports = app => {
       const customer = ctx.session.entity;
       if (typeof body.description !== 'string')
         description.forEach(item => {
-          const uniqueId = this.app.methods.getUniqueId();
+          const uniqueId = ctx.helper.getUniqueId();
           fs.copyFileSync(item[2], `/resource/description/${uniqueId}`);
           item[2] = uniqueId;
         });

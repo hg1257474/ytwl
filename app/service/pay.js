@@ -1,4 +1,5 @@
 const Service = require('egg').Service;
+
 class ChatService extends Service {
   async new(totalFee, customerId, name, description, servicerId) {
     return new Promise(async resolve => {

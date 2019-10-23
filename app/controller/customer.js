@@ -81,7 +81,7 @@ module.exports = app => {
         noViewedEnd: customer.noViewedEnd,
         waitPayTotal: customer.waitPayTotal
       };
-      const resource = app.caches.getResource('indexPage');
+      const resource = app.cache.indexPageColumn;
       if (resource.updatedAt.toString() !== ctx.request.body.expires) {
         ctx.body.indexPage = resource.content;
         ctx.body.expires = resource.updatedAt.toString();
@@ -104,6 +104,8 @@ module.exports = app => {
         ctx.status = 200;
         return;
       }
+      console.log(body);
+
       const orderId = await this.ctx.service.pay.new(
         body.totalFee,
         entity._id,
@@ -112,6 +114,7 @@ module.exports = app => {
       );
       // console.log(orderId);
       const order = await Order.findById(orderId).exec();
+      console.log(order);
       // order.description.orderId = order._id.toString();
       // await order.save();
       if (
@@ -157,7 +160,7 @@ module.exports = app => {
 
     async consultingPrice() {
       const { ctx } = this;
-      const resource = this.app.caches.getResource('payPage');
+      const resource = this.app.cache.product;
       ctx.body = {};
       if (ctx.request.header['if-modified-since'] !== resource.updatedAt.toString()) {
         ctx.body.payPage = resource.content;

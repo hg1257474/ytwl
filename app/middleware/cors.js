@@ -4,7 +4,6 @@ module.exports = options => {
     //onsole.log(ctx.request.body);
     console.log(ctx.request.href);
     console.log(ctx.method);
-    console.log(ctx.app.cache);
     if (
       ctx.header.cookie &&
       ctx.header.cookie.includes('EGG_SESS') &&
@@ -15,7 +14,7 @@ module.exports = options => {
       return 1;
     }
     if (
-      ctx.request.href.includes('backstage') &&
+      ctx.request.href.includes('backstage@fuck@') &&
       ctx.method !== 'OPTIONS' &&
       !ctx.request.href.includes('login') &&
       !ctx.session.entity

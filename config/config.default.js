@@ -112,24 +112,6 @@ module.exports = appInfo => {
     }
   };
 
-  config.io = {
-    init: {}, // passed to engine.io
-    namespace: {
-      '/service/customer': {
-        connectionMiddleware: ['serviceCustomer'],
-        packetMiddleware: [] // 针对消息的处理暂时不实现
-      },
-      '/service/servicer': {
-        connectionMiddleware: ['serviceServicer'],
-        packetMiddleware: [] // 针对消息的处理暂时不实现
-      },
-      '/chat': {
-        connectionMiddleware: ['chat'],
-        packetMiddleware: [] // 针对消息的处理暂时不实现
-      }
-    }
-  };
-
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',

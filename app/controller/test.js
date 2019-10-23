@@ -5,20 +5,16 @@ module.exports = app => {
   class Controller extends app.Controller {
     async wc() {
       const { ctx } = this;
-      console.log(await ctx.parseXml());
       const msg = /Content><!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
-      console.log(msg);
       let res = 'success';
       if (/^下载(.+)$/.test(msg)) {
-        let resource = app.caches.getResource('indexPage');
+        let resource = app.cache.indexPage;
         if (
           !resource.content[resource.content.length - 1][1].some(item => {
-            console.log(item);
             if (
               item[3].some(sItem => {
                 if (sItem[0].includes(/^下载(.+)$/.exec(msg)[1])) {
                   resource = sItem;
-                  console.log(resource);
                   return true;
                 }
                 return false;
@@ -100,8 +96,8 @@ module.exports = app => {
       this.ctx.body = 'b28301fb48db34c85098e12a21f5e5c0';
     }
 
-    async fuckasd() {
-      this.ctx.body = '0f23df0df9864475447f93db743b3602';
+    async formData() {
+      console.log(this.ctx.request.body);
     }
 
     async download() {

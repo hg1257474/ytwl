@@ -5,6 +5,8 @@
  */
 module.exports = app => {
   const { router, controller } = app;
+  router.post('/test/form_data', controller.test.formData);
+
   router.post('/backstage/login', controller.backstage.index.login);
   router.get('/backstage/servicer', controller.backstage.servicer.getServicers);
   router.get('/backstage/servicer/:id', controller.backstage.servicer.getServicer);
@@ -82,13 +84,11 @@ module.exports = app => {
   router.post("/service/file",controller.service.new.file)
 */
   router.get('/serviceList', controller.serviceList.index);
-  // router.get("/test",controller.test.test)
   router.get('/test', controller.test.test);
   router.options('/*', controller.home.index);
   router.post('/servicer/login', controller.servicer.login);
-  router.put('/backstage/resource', controller.backstage.resource.updateItem);
-  router.get('/backstage/resource', controller.backstage.resource.index);
-  router.post('/backstage/resource', controller.backstage.resource.newItem);
-  router.delete('/backstage/resource', controller.backstage.resource.deleteItem);
-  router.get('/backstage/resource/:target', controller.backstage.resource.other);
+  router.put('/backstage/resource/:target', controller.backstage.resource._update);
+  router.post('/backstage/resource/:target', controller.backstage.resource._new);
+  router.delete('/backstage/resource/:target', controller.backstage.resource._delete);
+  router.get('/backstage/resource/:target', controller.backstage.resource.index);
 };

@@ -1,155 +1,174 @@
 const fs = require('fs');
-// query [page,target,categorySelected]
-function getList(query, rawData) {
-  const resources = [];
-  let total = 0;
-  if (query.target === 'indexPageCategory') {
-    total = rawData.length;
-    for (
-      let key = (query.current - 1) * 10;
-      key < query.current * 10 && key < rawData.length;
-      key += 1
-    ) {
-      resources.push(rawData[key][0]);
-    }
-  } else if (query.target === 'indexPageTerm') {
-    const terms = rawData[query.indexPageCategorySelected][1];
-    total = terms.length;
-    for (let key = (query.current - 1) * 10; key < query.current * 10 && key < total; key += 1) {
-      resources.push(terms[key]);
-    }
-  }
 
-  console.log(total);
-  return { resources, total };
-}
 module.exports = app => {
   class Controller extends app.Controller {
     // GET start end
     async index() {
       const { ctx } = this;
-      let resource = null;
-      if (ctx.query.target.includes('indexPage'))
-        resource = this.app.caches.getResource('indexPage').content;
-      ctx.body = getList(ctx.query, resource);
+      const indexPageColumn = app.cache.indexPageColumn.content;
+      const current = ctx.query.current || 1;
+      switch (ctx.params.target) {
+        case 'index_page_category_list':
+          ctx.body = {
+            total: indexPageColumn.length,
+            content: Array.from({
+              length:
+                current * 10 > indexPageColumn.length
+                  ? indexPageColumn.length - (current - 1) * 10
+                  : 10
+            }).map((x, index) => indexPageColumn[(current - 1) * 10 + index][0])
+          };
+          break;
+        case 'index_page_term_list':
+          if (!indexPageColumn[ctx.query.category]) ctx.body = { category: -1, content: [] };
+          else
+            ctx.body = {
+              category: Number(ctx.query.category),
+              content: indexPageColumn[ctx.query.category][1].map(item => item.slice(0, 2))
+            };
+          break;
+        case 'index_page_categories':
+          ctx.body = indexPageColumn.map(item => item[0]);
+          break;
+        case 'index_page_term_total':
+          if (Number.isNaN(ctx.query.category)) ctx.statusCode = 400;
+          else ctx.body = indexPageColumn[ctx.query.category][1].length;
+          break;
+        case 'index_page_banner':
+          ctx.body = app.cache.indexPageBanner.content;
+          break;
+        case 'product':
+          ctx.body = app.cache.product.content[ctx.query.product];
+          break;
+        case 'product_list':
+          ctx.body = app.cache.product.content.map(item => {
+            const temp = { ...item };
+            delete temp.description;
+            return temp;
+          });
+          break;
+        case 'index_page_term':
+          ctx.body = indexPageColumn[ctx.query.category][1][ctx.query.term];
+          break;
+        default:
+          ctx.body = 404;
+      }
     }
 
     // GET | DELETE | PUT | POST    id
-    async updateItem() {
+    async _update() {
       const { ctx } = this;
-      const { query } = ctx;
       const { body } = ctx.request;
-      let resource = null;
-      let tempResource = null;
-      console.log(query);
-      console.log(body);
-      if (query.target.includes('indexPage')) {
-        resource = this.app.caches.getResource('indexPage');
-        tempResource = resource.content;
-        if (query.target === 'indexPageTerm') {
+      const { indexPageColumn } = app.cache;
+      const _app = app;
+      switch (ctx.params.target) {
+        case 'index_page_category': {
+          const terms = indexPageColumn.content[body.oldIndex][1];
+          indexPageColumn.content.splice(body.oldIndex, 1);
+          indexPageColumn.content.splice(body.index, 0, [body.category, terms]);
+          break;
+        }
+        case 'index_page_term': {
           if (body.termOther instanceof Array) {
             body.termOther.forEach(item => {
               if (item[1].includes('resource/tmp')) {
-                const uniqueId = this.app.methods.getUniqueId();
+                const uniqueId = ctx.helper.getUniqueId();
                 fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
-                item[1] = uniqueId;
+                const _item = item;
+                _item[1] = uniqueId;
               }
             });
           }
-          tempResource[body.oldCategory][1].splice(body.oldIndex, 1);
-          tempResource[body.category][1].splice(body.index, 0, [
-            body.termIcon.length === 2
-              ? body.termIcon
-              : [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')], //body.termIcon?"":"",
+          indexPageColumn.content[body.oldCategory][1].splice(body.oldIndex, 1);
+          indexPageColumn.content[body.category][1].splice(body.index, 0, [
+            [
+              body.termIcon[0],
+              body.termIcon[1].includes('base64,')
+                ? await ctx.service.file.create(body.termIcon[1], 'indexPage')
+                : body.termIcon[1]
+            ],
             body.term,
             body.termDescription,
             body.termOther
           ]);
-          console.log(tempResource[body.category][1][body.index]);
-        } else {
-          const terms = tempResource[body.oldIndex][1];
-          tempResource.splice(body.oldIndex, 1);
-          tempResource.splice(body.index, 0, [body.category, terms]);
+          indexPageColumn.markModified('content');
+          await indexPageColumn.save();
+          break;
         }
+        case 'index_page_banner':
+          _app.cache.indexPageBanner.content = [
+            body[0],
+            await ctx.service.file.create(body[1], 'indexPage')
+          ];
+          await _app.cache.indexPageBanner.save();
+          await indexPageColumn.save();
+          break;
+        case 'product':
+          _app.cache.product.content.forEach((item, index) => {
+            if (item.name === body.name) _app.cache.product.content[index] = body;
+          });
+          app.cache.product.markModified('content');
+          await _app.cache.product.save();
+          break;
+        default:
+          ctx.statusCode = 400;
       }
-      console.log(tempResource);
-      resource.markModified('content');
-      await resource.save();
-      ctx.body = getList(query, tempResource);
+      if (ctx.statusCode !== 400) ctx.body = 'success';
     }
 
-    async deleteItem() {
+    async _delete() {
       const { ctx } = this;
       const { query } = ctx;
-      let tempResource = null;
-      let resource = null;
-      if (query.target.includes('indexPage')) {
-        resource = this.app.caches.getResource('indexPage');
-        tempResource = resource.content;
-        if (query.target !== 'indexPageCategory') {
-          tempResource[query.indexPageCategorySelected][1].splice(query.inputTarget, 1);
-        } else tempResource.splice(query.inputTarget, 1);
+      const { indexPageColumn } = app.cache;
+      switch (ctx.params.target) {
+        case 'index_page_category':
+          indexPageColumn.content.splice(query.category, 1);
+          indexPageColumn.markModified('content');
+          await indexPageColumn.save();
+          break;
+        case 'index_page_term':
+          indexPageColumn.content[query.category][1].splice(query.term, 1);
+          indexPageColumn.markModified('content');
+          await indexPageColumn.save();
+          break;
+        default:
+          ctx.statusCode = 400;
       }
-      resource.markModified('content');
-      await resource.save();
-      ctx.body = getList(query, tempResource);
+      if (ctx.statusCode !== 400) ctx.body = 'success';
     }
 
-    async newItem() {
+    async _new() {
       const { ctx } = this;
       const { body } = ctx.request;
-      const { query } = ctx;
-      let tempResource = null;
-      let resource = null;
-      if (query.target.includes('indexPage')) {
-        resource = this.app.caches.getResource('indexPage');
-        tempResource = resource.content;
-        if (body.term) {
+      const { indexPageColumn } = app.cache;
+      switch (ctx.params.target) {
+        case 'index_page_category':
+          indexPageColumn.content.splice(body.index, 0, [body.category, []]);
+          indexPageColumn.markModified('content');
+          await indexPageColumn.save();
+          break;
+        case 'index_page_term':
           if (body.termOther instanceof Array) {
             body.termOther.forEach(item => {
-              if (item[1].includes('resource/tmp')) {
-                const uniqueId = this.app.methods.getUniqueId();
-                fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
-                item[1] = uniqueId;
-              }
+              const uniqueId = ctx.helper.getUniqueId();
+              fs.copyFileSync(item[1], `/resource/free/${uniqueId}`);
+              const _item = item;
+              _item[1] = uniqueId;
             });
           }
-          tempResource[body.category][1].splice(body.index, 0, [
+          indexPageColumn.content[body.category][1].splice(body.index, 0, [
             [body.termIcon[0], await ctx.service.file.create(body.termIcon[1], 'indexPage')],
             body.term,
             body.termDescription,
             body.termOther
           ]);
-        } else {
-          tempResource.splice(body.index, 0, [body.category, []]);
-        }
-      }
-      resource.markModified('content');
-      await resource.save();
-      ctx.body = getList(query, tempResource);
-    }
-
-    async other() {
-      const { ctx } = this;
-      const { query } = ctx;
-      let result = null;
-      let resource = null;
-      if (ctx.params.target.includes('index_page'))
-        resource = this.app.caches.getResource('indexPage').content;
-      switch (ctx.params.target) {
-        case 'index_page_term_total':
-          result = resource[query.category][1].length;
-          break;
-        case 'index_page_category_total':
-          result = resource.length;
-          break;
-        case 'index_page_categories':
-          result = resource.map(item => item[0]);
+          indexPageColumn.markModified('content');
+          await indexPageColumn.save();
           break;
         default:
-          throw new Error('dsds');
+          ctx.statusCode = 400;
       }
-      ctx.body = result;
+      if (ctx.statusCode !== 400) ctx.body = 'success';
     }
   }
   return Controller;

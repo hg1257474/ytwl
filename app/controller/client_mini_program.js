@@ -3,7 +3,7 @@ module.exports = app => {
     // PUT
     async lawyerExhibition() {
       const { ctx } = this;
-      const lawyerExhibition = this.app.caches.getResource('lawyerExhibition');
+      const { lawyerExhibition } = app.cache;
       if (ctx.query.target === 'id_list') {
         console.log(lawyerExhibition);
         ctx.body = lawyerExhibition.content.map(item => item._id);
@@ -17,7 +17,7 @@ module.exports = app => {
 
     async indexPageBanner() {
       const { ctx } = this;
-      const indexPageBanner = app.caches.getResource('indexPageBanner');
+      const { indexPageBanner } = app.cache;
       if (ctx.method === 'GET') {
         if (ctx.query.updatedAt) {
           if (

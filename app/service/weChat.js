@@ -61,9 +61,8 @@ class WeChatService extends Service {
 
   async pushMessage(openId, pagePath, target, template, data) {
     const { ctx, config } = this;
-    console.log(this.app.caches.getWeChatData());
     return new Promise(async resolve => {
-      const res = await ctx.curl(pushMessageUrl + this.app.caches.getWeChatData().accessToken, {
+      const res = await ctx.curl(pushMessageUrl + this.app.cache.accessToken, {
         method: 'POST',
         contentType: 'json',
         data: {
@@ -82,27 +81,16 @@ class WeChatService extends Service {
   }
 
   getJsSdkConfig(url) {
-    // const url = decodeURIComponent(this.ctx.request.queries.url[0]);
-    // const url = "http://www.huishenghuo.net:3000/?"+this.ctx.request.queries.url[0];
     const debug = true;
     const jsApiList = ['previewImage'];
-    const timestamp = parseInt(this.app.mongoose.now().getTime() / 1000);
-    const nonceStr = this.app.methods.getUniqueId().slice(0, 16);
-    const appId = this.config.weChat.appId;
-    const jsApiTicket = this.app.caches.getWeChatData().jsApiTicket;
-    console.log(jsApiTicket, url, nonceStr);
+    const timestamp = Math.ceil(this.app.mongoose.now().getTime() / 1000);
+    const nonceStr = this.ctx.helper.getUniqueId().slice(0, 16);
+    const { appId } = this.config.weChat;
+    const { jsApiTicket } = this.app.cache;
     const raw = `jsapi_ticket=${jsApiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
     const signature = Crypto.createHash('sha1')
       .update(raw)
       .digest('hex');
-    console.log({
-      appId,
-      timestamp,
-      nonceStr,
-      signature,
-      jsApiList,
-      debug
-    });
     return {
       appId,
       timestamp,
@@ -116,11 +104,9 @@ class WeChatService extends Service {
   async getPayConfig(order) {
     // console.log(this);
     const {
-      app: {
-        config,
-        methods: { getUniqueId }
-      },
+      app: { config },
       ctx: {
+        helper: { getUniqueId },
         request: { ip }
       }
     } = this;

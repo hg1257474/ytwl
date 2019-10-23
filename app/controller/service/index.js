@@ -16,11 +16,9 @@ module.exports = app => {
   class Controller extends app.Controller {
     async index() {
       const {
-        app: {
-          methods: { objectIdEqual: oIdEqual }
-        },
         ctx,
         ctx: {
+          helper: { objectIdEqual: oIdEqual },
           session: { entity },
           model: { Service, Order, Servicer }
         }
@@ -135,10 +133,8 @@ module.exports = app => {
     async update() {
       const {
         ctx,
-        app: {
-          methods: { objectIdEqual: oIdEqual }
-        },
         ctx: {
+          helper: { objectIdEqual: oIdEqual },
           session: { entity },
           service: { pay },
           model: { Service, Servicer, Customer },
@@ -190,7 +186,7 @@ module.exports = app => {
         case 'conclusion': {
           if (body.conclusion[1].length)
             body.conclusion[1].forEach(item => {
-              const uniqueId = this.app.methods.getUniqueId();
+              const uniqueId = ctx.helper.getUniqueId();
               fs.copyFileSync(item[2], `/resource/conclusion/${uniqueId}`);
               item[2] = uniqueId;
             });
