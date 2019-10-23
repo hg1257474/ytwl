@@ -27,8 +27,10 @@ module.exports = app => {
     }
 
     async reminderTotal() {
-      this.ctx.body =
-        this.ctx.session.entity.noViewedEnd.length + this.ctx.session.entity.waitPayTotal;
+      if (!this.ctx.session.entity) this.ctx.body = 0;
+      else
+        this.ctx.body =
+          this.ctx.session.entity.noViewedEnd.length + this.ctx.session.entity.waitPayTotal;
     }
 
     // GET
