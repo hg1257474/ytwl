@@ -10,7 +10,7 @@ module.exports = app => {
       const msg = /Content><!\[CDATA\[(.+)]]><\/Content/.exec(ctx.xml)[1];
       let res = 'success';
       if (/^下载(.+)$/.test(msg)) {
-        let resource = app.cache.indexPage;
+        let resource = app.cache.indexPageColumn;
         if (
           !resource.content[resource.content.length - 1][1].some(item => {
             if (

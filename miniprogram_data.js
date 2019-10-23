@@ -16,7 +16,7 @@ exports.data = {
     },
     { name: '年度会员', presentPrice: 0.01, description: '你那度会员的就是牛逼大' }
   ],
-  indexPage: [
+  indexPageColumn: [
     [
       categoryIcon,
       '合同',
