@@ -117,12 +117,18 @@ module.exports = app => {
       console.log(order);
       // order.description.orderId = order._id.toString();
       // await order.save();
-      if (
-        order.description.pointDeduction &&
-        !(order.totalFee * 100 - order.description.pointDeduction * 100)
-      )
-        ctx.redirect(`/customer/payment?orderId=${order._id}`);
-      else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
+      if (order.description.pointDeduction) {
+        if (
+          order.description.pointDeduction < 0 ||
+          order.totalFee * 100 - order.description.pointDeduction * 100 < 0
+        )
+          ctx.statusCode = 501;
+        else if (
+          order.description.pointDeduction >= 0 ||
+          order.totalFee * 100 - order.description.pointDeduction * 100 >= 0
+        )
+          ctx.redirect(`/customer/payment?orderId=${order._id}`);
+      } else ctx.body = await this.ctx.service.weChat.getPayConfig(order);
     }
 
     async pushTest() {
