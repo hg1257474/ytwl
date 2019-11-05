@@ -59,23 +59,70 @@ class WeChatService extends Service {
     });
   }
 
-  async pushMessage(openId, pagePath, target, template, data) {
-    const { ctx, config } = this;
+  async pushMessage(type, service) {
+    const templateIds = {
+      newService: 'oZqTW85wuhPJnwnTQLI7FkF4Nh521LfIg_REO_rnglI',
+      payment: 'pTOjmM_HHQ-6cNr19zKfCD4MSq0S7JWMT2VMNGaUDLM'
+    };
+    const categories = { contract: '合同', communication: '咨询', draft: '起草', review: '审核' };
+    function getFormatTime(_time) {
+      const time = new Date(_time);
+      return time.toLocaleString();
+    }
+    console.log(service);
+    let message;
+    if (type === 'newService') {
+      message = {
+        keyword1: {
+          value: `${service.name[0]}-${service.name[1]}-${categories[service.name[2]]}-${categories[
+            service.name[3]
+          ] || ''}`
+        },
+        keyword2: {
+          value:
+            service.name[3] === 'review'
+              ? '请登录小程序查看合同内容'
+              : service.description.slice(0, 100)
+        },
+        keyword3: { value: getFormatTime(service.createdAt) },
+        remark: { value: '点击处理请求' }
+      };
+    } else {
+      message = {
+        keyword1: { value: service._id },
+        keyword2: {
+          value: `${service.totalFee}元`
+        },
+        keyword3: {
+          value: '微信'
+        },
+        keyword4: { value: getFormatTime(service.updatedAt) },
+        remark: { value: '点击分配服务' }
+      };
+    }
+    const servicers = await this.app.model.Servicer.find(
+      { 'privilege.canManageServicer': true, oAOpenId: { $exists: true } },
+      'oAOpenId'
+    ).exec();
     return new Promise(async resolve => {
-      const res = await ctx.curl(pushMessageUrl + this.app.cache.accessToken, {
-        method: 'POST',
-        contentType: 'json',
-        data: {
-          touser: openId,
-          template_id: templates[template],
-          miniprogram: {
-            appid: config[target].appId,
-            pagepath: pagePath
-          },
-          data
-        }
-      });
-      console.log(res);
+      for (const servicer of servicers) {
+        console.log('11111');
+        console.log(message);
+        const res = await this.ctx.curl(pushMessageUrl + this.app.cache.accessToken, {
+          method: 'POST',
+          contentType: 'json',
+          data: {
+            touser: servicer.oAOpenId,
+            template_id: templateIds[type],
+            miniprogram: {
+              appid: this.config.Servicer.appId,
+              pagepath: 'pages/index/index'
+            },
+            data: message
+          }
+        });
+        console.log(res);
+      }
       resolve();
     });
   }

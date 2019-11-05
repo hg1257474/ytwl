@@ -251,6 +251,7 @@ module.exports = app => {
             .getLogger('indexPageHintChangeLogger')
             .info(`waitPayTotal————${customer._id.toString()}————subtract`, order.toJSON(), xml);
           await service.save();
+          ctx.service.weChat.pushMessage('payment', order);
         } else if (order.description.balance) {
           vip = { balance: 1 };
           points = '单次咨询充值';

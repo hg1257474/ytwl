@@ -111,6 +111,22 @@ module.exports = app => {
       console.log(ctx.body);
     }
 
+    async weChatPushMessage() {
+      this.ctx.service.weChat.pushMessage(
+        'newService',
+        await this.ctx.model.Service.findById('5dbbf3ada6a8a604a2c66a74').exec()
+      );
+      this.ctx.body = 'dsds';
+    }
+
+    async weChatPushMessage11() {
+      this.ctx.service.weChat.pushMessage(
+        'payment',
+        await this.ctx.model.Order.findById('5dbbf185a6a8a604a2c66a72').exec()
+      );
+      this.ctx.body = 'dsds';
+    }
+
     async resourceUpload() {
       const { ctx } = this;
       const {

@@ -1,10 +1,10 @@
-'use strict';
-
 /**
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
   const { router, controller } = app;
+  router.get('/test/we_chat_push_message_11', controller.test.weChatPushMessage11);
+  router.get('/test/we_chat_push_message', controller.test.weChatPushMessage);
   router.post('/test/form_data', controller.test.formData);
 
   router.post('/backstage/login', controller.backstage.index.login);

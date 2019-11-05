@@ -24,11 +24,11 @@ module.exports = app => {
           password: ctx.request.body.password
         }).exec();
         console.log(user);
-        if (user) {
+        if (user && user.privilege.canManageServicer) {
           console.log('dsds');
           ctx.session = { entity: user };
         }
-        ctx.body = user ? '301' : '401';
+        ctx.body = user && user.privilege.canManageServicer ? '301' : '401';
       }
     }
 

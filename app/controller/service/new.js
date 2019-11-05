@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 module.exports = app => {
   class Controller extends app.Controller {
     // PUT openId avatar nickname
@@ -27,7 +28,7 @@ module.exports = app => {
       const {
         ctx,
         ctx: {
-          model: { Service, NewService, Resource },
+          model: { Service },
           request: { body }
         }
       } = this;
@@ -36,7 +37,8 @@ module.exports = app => {
       // console.log(body.name);
       const customer = ctx.session.entity;
       if (typeof body.description !== 'string')
-        description.forEach(item => {
+        description.forEach(_item => {
+          const item = _item;
           const uniqueId = ctx.helper.getUniqueId();
           fs.copyFileSync(item[2], `/resource/description/${uniqueId}`);
           item[2] = uniqueId;
@@ -60,7 +62,7 @@ module.exports = app => {
       await service.save();
       customer.services.push(service._id);
       await customer.save();
-      //console.log(customer);
+      ctx.service.weChat.pushMessage('newService', service);
       ctx.status = 201;
     }
   }
