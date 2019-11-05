@@ -1,10 +1,6 @@
 // app.js
 
-const process = require('process');
-
 const session = {};
-
-process.env.TZ = 'Asia/BeiJing';
 
 module.exports = _app => {
   const app = _app;

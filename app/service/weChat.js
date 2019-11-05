@@ -66,8 +66,8 @@ class WeChatService extends Service {
     };
     const categories = { contract: '合同', communication: '咨询', draft: '起草', review: '审核' };
     function getFormatTime(_time) {
-      const time = new Date(_time);
-      return time.toLocaleString();
+      const time = new Date(new Date(_time).getTime() + 1000 * 8 * 3600);
+      return `${time.getUTCFullYear}-${time.getUTCMonth}-${time.getUTCDate} ${time.getUTCHours}:${time.getUTCMinutes}:${time.getUTCSeconds}`;
     }
     console.log(service);
     let message;
