@@ -112,6 +112,8 @@ module.exports = app => {
     }
 
     async weChatPushMessage() {
+      this.ctx.body = new Date().toLocaleString();
+      return 11;
       this.ctx.service.weChat.pushMessage(
         'newService',
         await this.ctx.model.Service.findById('5dbbf3ada6a8a604a2c66a74').exec()
