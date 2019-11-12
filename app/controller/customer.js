@@ -276,14 +276,17 @@ module.exports = app => {
           (customer.consumption * 100 + order.totalFee * 100 - pointDeduction * 100) / 100;
         if (pointDeduction)
           customer.points.records.push([`${points}积分抵扣`, order.createdAt, -pointDeduction]);
-        if ((order.totalFee * 100 - pointDeduction * 100) / 100 > 0)
+        if (Math.floor((order.totalFee * 100 - pointDeduction * 100) / 10) > 0)
           customer.points.records.push([
             points,
             order.createdAt,
-            (order.totalFee * 100 - pointDeduction * 100) / 100
+            Math.floor((order.totalFee * 100 - pointDeduction * 100) / 10) / 100
           ]);
         customer.points.total =
-          (customer.points.total * 100 + order.totalFee * 100 - 2 * pointDeduction * 100) / 100;
+          (customer.points.total * 100 -
+            pointDeduction * 100 +
+            Math.floor((order.totalFee * 100 - pointDeduction * 100) / 10)) /
+          100;
         await customer.save();
         await order.save();
       }
